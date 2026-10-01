@@ -1,0 +1,121 @@
+---
+import ProjectTile from './ProjectTile.astro';
+import disio from '../assets/home/disio.png';
+import artchain from '../assets/home/artchain.png';
+import disioLogo from '../assets/icons/logo-disio.svg';
+import artchainLogo from '../assets/icons/logo-artchain.svg';
+
+// TODO: /work/* case pages are not built yet.
+const projects = [
+  {
+    href: '/work/disio',
+    image: disio,
+    alt: 'DISio workspaces screen on a teal gradient',
+    kicker: '01 — Enterprise AI · NDA',
+    title: 'DISio',
+    logo: disioLogo,
+    summary: 'Trustworthy enterprise AI: workspaces, governed context and source lineage',
+  },
+  {
+    href: '/work/artchain',
+    image: artchain,
+    alt: 'Artchain inventory screen on a dark background',
+    kicker: '02 — Blockchain · Multi-role',
+    title: 'Artchain',
+    logo: artchainLogo,
+    summary: 'Designing trust into art management for museums and galleries',
+  },
+];
+
+const marquee = 'Other projects: coming soon';
+---
+
+<section class="work" id="work" aria-labelledby="work-title">
+  <h2 class="eyebrow work__title" id="work-title">Selected work</h2>
+
+  <div class="work__grid">
+    {projects.map((project) => <ProjectTile {...project} />)}
+  </div>
+
+  <div class="marquee" role="note" aria-label={marquee}>
+    <div class="marquee__track" aria-hidden="true">
+      {
+        [0, 1].map(() => (
+          <div class="marquee__group">
+            {Array.from({ length: 8 }, () => (
+              <span>{marquee}</span>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .work {
+    display: flex;
+    flex-direction: column;
+    padding: var(--section-gap) var(--page-inset) 0;
+    scroll-margin-top: 24px;
+  }
+
+  .work__title {
+    align-self: center;
+    margin-bottom: 40px;
+  }
+
+  .work__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .marquee {
+    margin-top: 8px;
+    padding: 24px 0;
+    border-radius: 200px;
+    background: var(--color-ink);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+  }
+  /* Two identical groups; each is wider than any screen (~3200px), so shifting the track by
+     exactly one group (-50%) loops seamlessly. */
+  .marquee__track {
+    display: flex;
+    width: max-content;
+    animation: marquee 60s linear infinite;
+  }
+  .marquee__group {
+    display: flex;
+    flex: none;
+  }
+  .marquee__track span {
+    padding-right: 0.3em;
+    font-size: 24px;
+    line-height: 26px;
+    text-transform: uppercase;
+    color: #fff;
+    white-space: nowrap;
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .work__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .marquee {
+      padding: 16px 0;
+    }
+    .marquee__track span {
+      font-size: 18px;
+      line-height: 22px;
+    }
+  }
+</style>

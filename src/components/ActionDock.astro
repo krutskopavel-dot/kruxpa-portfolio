@@ -1,0 +1,162 @@
+---
+// The hero button group "detaches" as soon as the visitor scrolls: it travels down to the
+// bottom edge and shrinks into its compact icon form, then follows the visitor. Scrolling back up
+// flies it home and expands it again. Technically the travelling panel is a fixed copy of the
+// group; the original keeps its place in the hero (hidden) so the layout never jumps.
+// While the closing CTA (with its own full buttons) is on screen, the panel steps aside.
+import ActionGroup from './ActionGroup.astro';
+---
+
+<div class="dock" data-dock>
+  <div class="dock__panel" inert>
+    <ActionGroup />
+  </div>
+</div>
+
+<script>
+  const dock = document.querySelector<HTMLElement>('[data-dock]');
+  const panel = dock?.querySelector<HTMLElement>('.dock__panel');
+  const group = panel?.querySelector<HTMLElement>('.actions');
+  const hero = document.querySelector<HTMLElement>('[data-actions="hero"]');
+  const cta = document.querySelector('[data-actions="cta"]');
+
+  if (dock && panel && group && hero) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const EASE = 'cubic-bezier(.65,0,.35,1)';
+    const BOTTOM = 24; // panel's resting gap from the bottom edge (keep in sync with CSS)
+    let detached = false;
+    let ctaVisible = false;
+    let flight: Animation | null = null;
+
+    // Offset from the panel's resting place (bottom centre) to wherever the hero group is now.
+    const offsetToHero = () => {
+      const h = hero.getBoundingClientRect();
+      return {
+        x: h.left + h.width / 2 - window.innerWidth / 2,
+        y: h.top + h.height / 2 - (window.innerHeight - BOTTOM - panel.offsetHeight / 2),
+      };
+    };
+
+    // Switch compact on/off without the width transition (used to reset the copy).
+    const setCompactInstantly = (compact: boolean) => {
+      group.classList.add('is-instant');
+      group.classList.toggle('actions--compact', compact);
+      void group.offsetWidth;
+      group.classList.remove('is-instant');
+    };
+
+    const sync = () => {
+      const active = detached && !ctaVisible;
+      dock.classList.toggle('is-away', detached && ctaVisible);
+      panel.toggleAttribute('inert', !active);
+    };
+
+    const detach = (animate: boolean) => {
+      detached = true;
+      flight?.cancel();
+      hero.style.visibility = 'hidden';
+      dock.classList.add('is-on');
+      sync();
+      if (!animate || reduced) {
+        setCompactInstantly(true);
+        return;
+      }
+      // Start exactly over the hero group at full size, then fly down while shrinking.
+      setCompactInstantly(false);
+      const { x, y } = offsetToHero();
+      group.classList.add('actions--compact');
+      flight = panel.animate([{ transform: `translate(${x}px, ${y}px)` }, { transform: 'none' }], {
+        duration: 650,
+        easing: EASE,
+      });
+    };
+
+    const attach = () => {
+      detached = false;
+      flight?.cancel();
+      sync();
+      const land = () => {
+        hero.style.visibility = '';
+        dock.classList.remove('is-on');
+        setCompactInstantly(false);
+        flight?.cancel();
+      };
+      if (reduced || ctaVisible) return land();
+      // Fly back up into the hero slot, expanding on the way.
+      const { x, y } = offsetToHero();
+      group.classList.remove('actions--compact');
+      flight = panel.animate([{ transform: 'none' }, { transform: `translate(${x}px, ${y}px)` }], {
+        duration: 500,
+        easing: EASE,
+        fill: 'forwards',
+      });
+      flight.onfinish = land;
+    };
+
+    // Detach as soon as the visitor starts scrolling, so the panel heads straight down from where
+    // it sits instead of first riding the page up to the top edge. Back at the top, it returns.
+    const THRESHOLD = 40;
+    let ticking = false;
+    const onScroll = () => {
+      ticking = false;
+      const scrolled = window.scrollY > THRESHOLD;
+      if (scrolled && !detached) detach(true);
+      else if (!scrolled && detached) attach();
+    };
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(onScroll);
+        }
+      },
+      { passive: true },
+    );
+    // Page opened (or restored) already scrolled down: start docked, no flight.
+    if (window.scrollY > THRESHOLD) detach(false);
+
+    if (cta) {
+      new IntersectionObserver(([entry]) => {
+        ctaVisible = entry.isIntersecting;
+        sync();
+      }).observe(cta);
+    }
+  }
+</script>
+
+<style>
+  .dock {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 24px;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    visibility: hidden;
+  }
+  .dock.is-on {
+    visibility: visible;
+  }
+
+  .dock__panel {
+    pointer-events: auto;
+    transition:
+      opacity 250ms ease,
+      translate 400ms var(--ease-out);
+  }
+  /* Steps aside while the closing CTA is on screen */
+  .dock.is-away .dock__panel {
+    opacity: 0;
+    translate: 0 32px;
+    pointer-events: none;
+  }
+
+  .dock :global(.actions.is-instant .btn),
+  .dock :global(.actions.is-instant .btn *),
+  .dock :global(.actions.is-instant .btn::before) {
+    transition: none !important;
+  }
+</style>

@@ -1,0 +1,47 @@
+---
+// Mono label + H2. Left-aligned (760 wide) or centred (920 wide).
+interface Props {
+  label: string;
+  title: string;
+  align?: 'left' | 'center';
+  tone?: 'light' | 'dark';
+}
+
+const { label, title, align = 'left', tone = 'light' } = Astro.props;
+---
+
+<header class:list={['head', `head--${align}`, `head--${tone}`]}>
+  <p class="eyebrow head__label">{label}</p>
+  <h2 class="head__title">{title}</h2>
+</header>
+
+<style>
+  .head {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 760px;
+  }
+  .head--center {
+    align-items: center;
+    max-width: 920px;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .head__title {
+    font-weight: 500;
+    font-size: clamp(32px, 3.056vw, 44px);
+    line-height: 1.1818;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+    text-wrap: balance;
+  }
+
+  .head--dark .head__label {
+    color: #9aa3ab;
+  }
+  .head--dark .head__title {
+    color: #fff;
+  }
+</style>

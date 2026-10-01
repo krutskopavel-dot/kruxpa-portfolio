@@ -1,0 +1,402 @@
+---
+// Artchain case study — Figma "Artchain — Portfolio Case Study · v3 Page" (188:14852).
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import SectionHead from '../../components/case/SectionHead.astro';
+import ScreenTile from '../../components/case/ScreenTile.astro';
+import Feature from '../../components/case/Feature.astro';
+import CaseFooter from '../../components/case/CaseFooter.astro';
+import timelineDot from '../../assets/cases/timeline-dot.svg';
+import '../../styles/case.css';
+
+import heroInventory from '../../assets/cases/artchain/hero-inventory.png';
+import digitalPassport from '../../assets/cases/artchain/digital-passport.jpg';
+import userManagement from '../../assets/cases/artchain/user-management.png';
+import requestsQueue from '../../assets/cases/artchain/requests-queue.png';
+import inviteWithRole from '../../assets/cases/artchain/invite-with-role.png';
+import bulkImport from '../../assets/cases/artchain/bulk-import.jpg';
+import inventoryFilters from '../../assets/cases/artchain/inventory-filters.png';
+import verificationLevels from '../../assets/cases/artchain/verification-levels.png';
+import transferOwnership from '../../assets/cases/artchain/transfer-ownership.png';
+import marketplaceAll from '../../assets/cases/artchain/marketplace-all.png';
+import marketplaceDetail from '../../assets/cases/artchain/marketplace-detail-mobile.png';
+import designSystem from '../../assets/cases/artchain/design-system.png';
+
+const meta = [
+  { label: 'Role', value: 'Senior Product Designer, design lead' },
+  { label: 'Scope', value: 'Admin, verification, marketplace, design system' },
+  { label: 'Platform', value: 'B2B, B2C web app + public marketplace' },
+  { label: 'Status', value: 'Live · art-chain.io' },
+];
+
+const tldr = [
+  {
+    label: '01 — Problem',
+    text: 'Art records lived on paper and in emails. Provenance was checked by calling previous owners; authentication took days to weeks.',
+  },
+  {
+    label: '02 — My part',
+    text: 'Led design from discovery to delivery: roles and access, business verification, inventory, artwork verification, marketplace, design system.',
+  },
+  {
+    label: '03 — Outcome',
+    text: 'One platform where verification is a structured, auditable workflow — and trust is visible to everyone, down to the buyer.',
+  },
+];
+
+const pains = [
+  { title: 'Paper certificates', text: 'Losable, forgeable and easy to alter without anyone noticing.' },
+  { title: 'No single source of truth', text: 'Every gallery and institution kept its own records in its own format.' },
+  { title: 'Ownership disputes', text: 'Settling who owns a work could take legal proceedings.' },
+];
+
+const roles = [
+  {
+    label: '01 — Inside the museum',
+    title: 'Admin',
+    text: 'Invites curators, assigns roles, manages billing and passes business verification.',
+  },
+  {
+    label: '02 — Inside the museum',
+    title: 'Curator',
+    text: 'Adds artworks and artists, manages inventory and submits records for verification.',
+  },
+  {
+    label: '03 — Artchain',
+    title: 'Verifier',
+    text: 'Reviews submitted records and approves or declines them.',
+  },
+];
+
+const tensions = [
+  [
+    'Records are permanent once written.',
+    'Room for typos, wrong files and second thoughts.',
+    'Checks, previews and maps data before anything is recorded.',
+  ],
+  [
+    'Identity is a wallet address and a hash.',
+    'To think in artworks, artists and statuses.',
+    'Leads with the artwork and its status; chain IDs stay available, never in the way.',
+  ],
+  [
+    'Every signed action is irreversible.',
+    'Only the actions their role allows.',
+    'Shows each role its own actions — nothing it can’t or shouldn’t do.',
+  ],
+];
+
+const steps = [
+  {
+    title: 'Discovery',
+    text: 'Interviews with gallery and museum staff to map how records, certificates and provenance checks worked before Artchain.',
+  },
+  {
+    title: 'Usability testing',
+    text: 'Moderated sessions on bulk import and verification — the flows where one mistake is hardest to undo.',
+  },
+  {
+    title: 'Design system',
+    text: 'One component library for admin, verification and marketplace, built together with the developers.',
+  },
+];
+
+const outcomes = [
+  {
+    title: 'Verification became a workflow',
+    text: 'Authentication moved from emails and calls to an auditable flow, with history in every passport.',
+  },
+  {
+    title: 'Roles made mistakes harder',
+    text: 'Each person gets only the actions they are responsible for, so critical errors are harder to make.',
+  },
+  {
+    title: 'Trust became visible',
+    text: 'Verified provenance reaches buyers as a clear signal on every artwork.',
+  },
+];
+---
+
+<Base
+  title="Artchain — Designing trust into art management · Pavel Krutsko"
+  description="A blockchain platform where museums and galleries manage, verify and protect artworks — built for people who are experts in art, not in crypto."
+>
+  <Header />
+  <main class="case">
+    <!-- 01 — Hero -->
+    <section class="hero">
+      <div class="hero__head">
+        <div class="hero__intro">
+          <p class="eyebrow">Case study 02 — Artchain</p>
+          <h1>Designing trust into art management</h1>
+          <p class="hero__lead">
+            A blockchain platform where museums and galleries manage, verify and protect artworks — built for people who
+            are experts in art, not in crypto.
+          </p>
+        </div>
+        <dl class="meta">
+          {
+            meta.map((row) => (
+              <div class="meta__row">
+                <dt class="eyebrow">{row.label}</dt>
+                <dd>{row.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+      <ScreenTile
+        image={heroInventory}
+        alt="Artchain inventory table with artworks and their verification status"
+        glow="hero"
+        accent="orange"
+        eager
+      />
+    </section>
+
+    <!-- 02 — TL;DR -->
+    <section class="tldr" aria-label="Summary">
+      {
+        tldr.map((cell) => (
+          <div class="tldr__cell">
+            <p class="eyebrow">{cell.label}</p>
+            <p class="tldr__text">{cell.text}</p>
+          </div>
+        ))
+      }
+    </section>
+
+    <!-- 03 — Context -->
+    <section class="section">
+      <div class="text-block">
+        <SectionHead label="Context" title="Art runs on trust — and trust ran on paper." />
+        <ol class="columns">
+          {
+            pains.map((pain, i) => (
+              <li class="column column--ruled">
+                <span class="eyebrow">{String(i + 1).padStart(2, '0')}</span>
+                <h3 class="column__title">{pain.title}</h3>
+                <p class="column__text">{pain.text}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <ScreenTile
+        image={digitalPassport}
+        alt="Digital passport of an artwork with provenance and verification history"
+        caption="The answer to paper: a digital passport"
+        glow="wideRight"
+        accent="orange"
+      />
+    </section>
+
+    <!-- 04 — Users & roles -->
+    <section class="section">
+      <div class="text-block">
+        <SectionHead label="Users & roles" title="Three roles, one chain of trust." />
+        <div class="sheet">
+          <div class="sheet__row">
+            {
+              roles.map((cell) => (
+                <div class="sheet__cell">
+                  <p class="eyebrow">{cell.label}</p>
+                  <h3 class="sheet__title">{cell.title}</h3>
+                  <p class="column__text">{cell.text}</p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+      <ScreenTile
+        image={userManagement}
+        alt="Admin user management with roles"
+        caption="Admin — user management"
+        glow="wideLeftInset"
+        accent="orange"
+      />
+    </section>
+
+    <!-- 05 — Core challenge -->
+    <section class="section">
+      <div class="challenge">
+        <SectionHead label="The core challenge" title="Security vs. usability." align="center" tone="dark" />
+        <table class="tensions">
+          <thead>
+            <tr>
+              <th scope="col">The blockchain says</th>
+              <th scope="col">People need</th>
+              <th scope="col">So the design…</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              tensions.map(([says, need, design]) => (
+                <tr>
+                  <td>{says}</td>
+                  <td>{need}</td>
+                  <td>{design}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 06 — How I worked -->
+    <section class="section section--text">
+      <SectionHead label="How I worked" title="Discovery to delivery, tested where mistakes cost most." />
+      <ol class="columns">
+        {
+          steps.map((step, i) => (
+            <li class="column">
+              <span class="rail" aria-hidden="true">
+                <img src={timelineDot.src} width="9" height="9" alt="" />
+              </span>
+              <span class="eyebrow">Step {String(i + 1).padStart(2, '0')}</span>
+              <h3 class="column__title">{step.title}</h3>
+              <p class="column__text">{step.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- 07 — Design decisions -->
+    <section class="section section--features">
+      <SectionHead label="Design decisions" title="Four decisions that kept trust intact." align="center" />
+      <Feature
+        label="Decision 01 / 04"
+        title="Verification lives apart from inventory"
+        text="Verifiers work from a dedicated request queue. After testing, the full verification history moved into the digital passport — right next to Approve / Decline."
+        accent="orange"
+        screens={[
+          {
+            image: requestsQueue,
+            alt: 'Verifier request queue',
+            caption: 'Verifier — requests queue',
+            glow: 'wideRight',
+          },
+        ]}
+      />
+      <Feature
+        label="Decision 02 / 04"
+        title="Interfaces shaped by role"
+        text="Admins invite people and assign their role. Curators manage inventory, verifiers see only requests — nobody sees an action their role can’t take."
+        accent="orange"
+        screens={[
+          {
+            image: inviteWithRole,
+            alt: 'Admin inviting a user and assigning a role',
+            caption: 'Admin — invite with a role',
+            glow: 'wideLeft',
+          },
+        ]}
+      />
+      <Feature
+        label="Decision 03 / 04"
+        title="Complexity revealed step by step"
+        text="Bulk import walks through upload → preview → mapping → duplicates, so errors are caught before anything is recorded. Filters keep large collections searchable."
+        accent="orange"
+        screens={[
+          {
+            image: bulkImport,
+            alt: 'Bulk import with a preview of the uploaded records',
+            caption: 'Curator — bulk import',
+            glow: 'squareEdge',
+          },
+          {
+            image: inventoryFilters,
+            alt: 'Inventory filters panel',
+            caption: 'Curator — inventory filters',
+            glow: 'squareCorner',
+          },
+        ]}
+      />
+      <Feature
+        label="Decision 04 / 04"
+        title="Access grows with trust"
+        text="A new museum starts working right away. Level 1 — phone and email — unlocks the product; Level 2 — KYB for the company and KYC for its directors — unlocks blockchain records and the marketplace. Irreversible steps, like transferring ownership, say so before you commit."
+        accent="orange"
+        align="top"
+        screens={[
+          {
+            image: verificationLevels,
+            alt: 'Business verification levels',
+            caption: 'Admin — verification levels',
+            glow: 'squareLeft',
+          },
+          {
+            image: transferOwnership,
+            alt: 'Transfer ownership confirmation warning that the step is irreversible',
+            caption: 'Owner — transfer ownership',
+            glow: 'squareRight',
+          },
+        ]}
+      />
+    </section>
+
+    <!-- 08 — Marketplace -->
+    <section class="section">
+      <div class="lead-head">
+        <SectionHead label="Where trust pays off" title="Buyers see the proof, not the process." align="center" />
+        <p class="lead-head__text">Everything verified behind the scenes surfaces on the artwork as a trust signal.</p>
+      </div>
+      <div class="pair">
+        <ScreenTile
+          image={marketplaceAll}
+          alt="Marketplace grid of artworks"
+          caption="Buyer — all artworks"
+          glow="squareDiagonal"
+          accent="orange"
+          format="square"
+        />
+        <ScreenTile
+          image={marketplaceDetail}
+          alt="Artwork detail page in the marketplace on a phone"
+          caption="Buyer — artwork detail"
+          glow="squareDiagonalMirror"
+          accent="orange"
+          format="phone"
+        />
+      </div>
+    </section>
+
+    <!-- 09 — Design system -->
+    <section class="section">
+      <div class="split">
+        <SectionHead label="Design system" title="One language for three environments." />
+        <p class="split__text">
+          A shared component library keeps admin, verification and marketplace consistent — tables, forms, statuses and
+          filters behave the same everywhere.
+        </p>
+      </div>
+      <ScreenTile
+        image={designSystem}
+        alt="Component sheet with form fields, selects, date pickers and validation states"
+        caption="Components — forms, selects, date pickers, validation states"
+        format="board"
+      />
+    </section>
+
+    <!-- 10 — Outcome -->
+    <section class="section section--text">
+      <SectionHead label="Outcome" title="A structured chain of trust — live in production." />
+      <ol class="outcomes">
+        {
+          outcomes.map((row, i) => (
+            <li class="outcome">
+              <span class="outcome__num">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="outcome__title">{row.title}</h3>
+              <p class="outcome__text">{row.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+  </main>
+
+  <CaseFooter next={{ title: 'DISio', href: '/work/disio' }} />
+</Base>

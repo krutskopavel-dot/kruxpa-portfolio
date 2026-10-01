@@ -1,0 +1,103 @@
+---
+import { getImage } from 'astro:assets';
+import portrait from '../assets/home/portrait.png';
+
+// Poster = first frame of the loop (exported from tools/video-fx), shown until the video plays.
+const poster = await getImage({ src: portrait, format: 'webp', quality: 90 });
+---
+
+<section class="about" id="about" aria-labelledby="about-title">
+  <video
+    class="about__portrait"
+    data-src="/video/portrait.mp4"
+    poster={poster.src}
+    width="327"
+    height="480"
+    muted
+    loop
+    playsinline
+    preload="none"
+    aria-label="Portrait of Pavel Krutsko"></video>
+
+  <div class="about__text">
+    <h2 class="eyebrow" id="about-title">About</h2>
+    <p class="about__lead">
+      I’m a Senior Product Designer based in Prague, focused on turning complex products into clear, intuitive
+      experiences.
+    </p>
+    <p class="about__body">
+      I work across UX, UI, product strategy, and design systems — often with enterprise tools, AI products, and
+      workflows where simplicity is hard to achieve. I like understanding how things actually work, questioning
+      unnecessary complexity, and designing solutions that make sense for both users and the business.
+    </p>
+  </div>
+</section>
+
+<script>
+  // Load the 4.5 MB loop only when the portrait is about to scroll into view, and play it only
+  // while visible. With reduced motion the poster stays.
+  const video = document.querySelector<HTMLVideoElement>('.about__portrait');
+  if (video && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    let inView = false;
+    const play = () => video.play().catch(() => {});
+    new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting;
+        if (inView) {
+          if (!video.src) video.src = video.dataset.src!;
+          play();
+        } else if (video.src) {
+          video.pause();
+        }
+      },
+      { rootMargin: '300px 0px' },
+    ).observe(video);
+    // Browsers pause media in background tabs; resume when the tab comes back.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && inView) play();
+    });
+  }
+</script>
+
+<style>
+  .about {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+    padding: var(--section-gap) var(--content-inset) 0;
+    scroll-margin-top: 24px;
+  }
+
+  .about__portrait {
+    display: block;
+    width: 327px;
+    max-width: 70vw;
+    height: auto;
+    aspect-ratio: 327 / 480;
+    border-radius: 80px;
+    object-fit: cover;
+  }
+
+  .about__text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    max-width: 920px;
+    text-align: center;
+  }
+  .about__lead {
+    font-weight: 500;
+    font-size: clamp(24px, 2.223vw, 32px);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+    text-wrap: balance;
+  }
+  .about__body {
+    font-size: 18px;
+    line-height: 28px;
+    color: var(--color-text-secondary);
+  }
+</style>

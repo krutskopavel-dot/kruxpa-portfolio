@@ -1,0 +1,442 @@
+---
+// DISio case study — Figma "DISio — Portfolio Case Study · v1 Page" (214:15233).
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import SectionHead from '../../components/case/SectionHead.astro';
+import ScreenTile from '../../components/case/ScreenTile.astro';
+import Feature from '../../components/case/Feature.astro';
+import CaseFooter from '../../components/case/CaseFooter.astro';
+import timelineDot from '../../assets/cases/timeline-dot.svg';
+import '../../styles/case.css';
+
+import heroLineage from '../../assets/cases/disio/hero-lineage.png';
+import workspaces from '../../assets/cases/disio/workspaces.png';
+import scopeGeneral from '../../assets/cases/disio/scope-general.webp';
+import scopeKnowledgeBase from '../../assets/cases/disio/scope-knowledge-base-v2.png';
+import chatSourceTags from '../../assets/cases/disio/chat-source-tags.png';
+import chatSourceHighlight from '../../assets/cases/disio/chat-source-highlight.png';
+import namedConnectors from '../../assets/cases/disio/named-connectors.png';
+import aiSetupAssistant from '../../assets/cases/disio/ai-setup-assistant.png';
+import aiDraftedVersion from '../../assets/cases/disio/ai-drafted-version.png';
+import compareVersions from '../../assets/cases/disio/compare-versions.png';
+import scopeMakePublic from '../../assets/cases/disio/scope-make-public.png';
+import prePublishCheck from '../../assets/cases/disio/pre-publish-check.png';
+import kbAddNew from '../../assets/cases/disio/kb-add-new.png';
+import kbProcessing from '../../assets/cases/disio/kb-processing.png';
+import productWishlist from '../../assets/cases/disio/product-wishlist.png';
+import notifications from '../../assets/cases/disio/notifications.png';
+
+const meta = [
+  { label: 'Role', value: 'Senior Product Designer' },
+  { label: 'Scope', value: 'Workspaces, Scopes, Knowledge Base, connectors, source lineage' },
+  { label: 'Product', value: 'Internal enterprise AI platform' },
+  { label: 'Timeline', value: '2025–2026 · NDA' },
+];
+
+const tldr = [
+  {
+    label: '01 — Problem',
+    text: 'Enterprise AI only works when people know where they are working, what the AI can access, and why they should trust the answer.',
+  },
+  {
+    label: '02 — My part',
+    text: 'Owned UX for everything around the chat — workspaces, Scopes, Knowledge Base, connectors — and the source lineage inside it.',
+  },
+  {
+    label: '03 — Outcome',
+    text: 'A clearer system for where teams work, what AI can access, and how answers can be verified.',
+  },
+];
+
+const pains = [
+  {
+    title: 'Fragmented context',
+    text: 'People had to know which workspace they were in, which Scope governed the session and which sources the AI could use.',
+  },
+  {
+    title: 'One connection per type',
+    text: 'The model broke once teams needed several Databricks, Postgres or Jira instances inside one Scope.',
+  },
+  {
+    title: 'Answers hard to verify',
+    text: 'Responses combined several systems, but people couldn’t see where each claim came from without a technical trace.',
+  },
+];
+
+const architecture = [
+  {
+    label: '01 — Where teams work',
+    title: 'Workspace',
+    text: 'A persistent team environment for a specific use case — the entry point to every chat.',
+  },
+  {
+    label: '02 — What AI may use',
+    title: 'Scope',
+    text: 'The governed data boundary behind a workspace. People can only query what the Scope includes.',
+  },
+  {
+    label: '03 — What’s inside',
+    title: 'Context',
+    text: 'Knowledge Base documents and Connectors to enterprise sources, with access rules on top.',
+  },
+];
+
+const tensions = [
+  [
+    'One answer draws on many systems.',
+    'To know which source each claim came from.',
+    'Tags sources inline; the full lineage opens only on demand.',
+  ],
+  [
+    'Teams run several instances of each source.',
+    'To pick the right one without guessing.',
+    'Gives every connection a unique name people can call in chat.',
+  ],
+  [
+    'Access is set up in configuration.',
+    'To trust what the AI is allowed to use.',
+    'Makes Scope, sources and versions explicit — and traces them in the lineage.',
+  ],
+];
+
+const steps = [
+  {
+    title: 'Prototype the flow',
+    text: 'Key flows prototyped end to end — from workspace and Scope setup to the source lineage of an answer.',
+  },
+  {
+    title: 'Review it in the build',
+    text: 'Implementation reviews exposed where polished flows broke: long names, unclear context, missing states.',
+  },
+  {
+    title: 'Refine patterns and states',
+    text: 'Gaps and edge cases fed back into patterns — truncation rules, context labels, error and empty states.',
+  },
+];
+
+const outcomes = [
+  {
+    title: 'An explicit context model',
+    text: 'Workspace and Scope became separate, understandable layers: where the team works vs. what the AI may use.',
+  },
+  {
+    title: 'Scalable source configuration',
+    text: 'Connector types support multiple named instances, with validation that keeps chat references unambiguous.',
+  },
+  {
+    title: 'Explainable AI responses',
+    text: 'People see source attribution inline and open the full lineage when they need deeper verification.',
+  },
+];
+---
+
+<Base
+  title="DISio — Designing trustworthy enterprise AI · Pavel Krutsko"
+  description="How I connected team workspaces, governed AI context, enterprise data sources and answer provenance into one coherent product."
+>
+  <Header />
+  <main class="case">
+    <!-- 01 — Hero -->
+    <section class="hero">
+      <div class="hero__head">
+        <div class="hero__intro">
+          <p class="eyebrow">Case study 01 — DISio</p>
+          <h1>Designing trustworthy enterprise AI</h1>
+          <p class="hero__lead">
+            How I connected team workspaces, governed AI context, enterprise data sources and answer provenance into one
+            coherent product.
+          </p>
+        </div>
+        <dl class="meta">
+          {
+            meta.map((row) => (
+              <div class="meta__row">
+                <dt class="eyebrow">{row.label}</dt>
+                <dd>{row.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+      <ScreenTile
+        image={heroLineage}
+        alt="DISio chat answer with inline source tags and the Lineage panel open"
+        glow="hero"
+        eager
+      />
+    </section>
+
+    <!-- 02 — TL;DR -->
+    <section class="tldr" aria-label="Summary">
+      {
+        tldr.map((cell) => (
+          <div class="tldr__cell">
+            <p class="eyebrow">{cell.label}</p>
+            <p class="tldr__text">{cell.text}</p>
+          </div>
+        ))
+      }
+    </section>
+
+    <!-- 03 — Context -->
+    <section class="section">
+      <div class="text-block">
+        <SectionHead label="Context" title="The challenge was bigger than the chat." />
+        <ol class="columns">
+          {
+            pains.map((pain, i) => (
+              <li class="column column--ruled">
+                <span class="eyebrow">{String(i + 1).padStart(2, '0')}</span>
+                <h3 class="column__title">{pain.title}</h3>
+                <p class="column__text">{pain.text}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <ScreenTile
+        image={workspaces}
+        alt="Workspaces overview with personal and shared workspace cards"
+        caption="Workspaces — where teams work"
+        glow="wideRight"
+      />
+    </section>
+
+    <!-- 04 — Product architecture -->
+    <section class="section">
+      <div class="text-block">
+        <SectionHead label="Product architecture" title="One mental model connected the product." />
+        <div class="sheet">
+          <div class="sheet__row">
+            {
+              architecture.map((cell) => (
+                <div class="sheet__cell">
+                  <p class="eyebrow">{cell.label}</p>
+                  <h3 class="sheet__title">{cell.title}</h3>
+                  <p class="column__text">{cell.text}</p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+        <div class="result">
+          <p class="eyebrow">04 — The result</p>
+          <p class="result__text">
+            People ask in chat, and the answer is grounded in the governed sources of the selected Scope.
+          </p>
+        </div>
+      </div>
+      <div class="pair">
+        <ScreenTile
+          image={scopeGeneral}
+          alt="New Scope setup: general settings step"
+          caption="Scope — governed data boundary"
+          glow="squareLeft"
+          format="square"
+        />
+        <ScreenTile
+          image={scopeKnowledgeBase}
+          alt="Scope Knowledge Base tab with document sets"
+          caption="Scope — knowledge base"
+          glow="squareRight"
+          format="square"
+        />
+      </div>
+    </section>
+
+    <!-- 05 — Core challenge -->
+    <section class="section">
+      <div class="challenge">
+        <SectionHead label="The core challenge" title="Capability vs. clarity." align="center" tone="dark" />
+        <table class="tensions">
+          <thead>
+            <tr>
+              <th scope="col">Enterprise AI says</th>
+              <th scope="col">People need</th>
+              <th scope="col">So the design…</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              tensions.map(([says, need, design]) => (
+                <tr>
+                  <td>{says}</td>
+                  <td>{need}</td>
+                  <td>{design}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 06 — How I worked -->
+    <section class="section section--text">
+      <SectionHead label="How I worked" title="Validation was part of the design loop." />
+      <ol class="columns">
+        {
+          steps.map((step, i) => (
+            <li class="column">
+              <span class="rail" aria-hidden="true">
+                <img src={timelineDot.src} width="9" height="9" alt="" />
+              </span>
+              <span class="eyebrow">Step {String(i + 1).padStart(2, '0')}</span>
+              <h3 class="column__title">{step.title}</h3>
+              <p class="column__text">{step.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <!-- 07 — Design decisions -->
+    <section class="section section--features">
+      <SectionHead label="Design decisions" title="Four decisions that kept AI answers trustworthy." align="center" />
+      <Feature
+        label="Decision 01 / 04"
+        title="Lineage where the answer is read"
+        text="The chat already existed; I designed its lineage layer. A single answer can combine Databricks, Muse and Jira — source tags sit next to each statement, and the Lineage panel traces how the answer was built."
+        screens={[
+          {
+            image: chatSourceTags,
+            alt: 'Chat answer with inline source tags',
+            caption: 'Chat — inline source tags',
+            glow: 'squareLeft',
+          },
+          {
+            image: chatSourceHighlight,
+            alt: 'Hovering a source tag highlights the matching statement and source',
+            caption: 'Chat — tag and source highlight each other',
+            glow: 'squareRight',
+          },
+        ]}
+      />
+      <Feature
+        label="Decision 02 / 04"
+        title="Connections became names you can call"
+        text="The first model allowed one connection per type. Now each Databricks, Postgres or Jira instance gets its own name — the same handle people use in chat."
+        screens={[
+          {
+            image: namedConnectors,
+            alt: 'Scope connectors list with named instances',
+            caption: 'Scope — named connectors',
+            glow: 'wideLeft',
+          },
+        ]}
+      />
+      <Feature
+        label="Decision 03 / 04"
+        title="AI helps set up the Scope"
+        text="A blank Scope manifest is hard to write. A short AI Setup Assistant asks about the goal and data sources, then drafts the manifest for the Owner to review."
+        screens={[
+          {
+            image: aiSetupAssistant,
+            alt: 'AI Setup Assistant drafting a Scope manifest',
+            caption: 'Owner — AI setup assistant',
+            glow: 'wideLeft',
+          },
+        ]}
+      />
+      <Feature
+        label="Decision 04 / 04"
+        title="Scope changes are versioned"
+        text="A Scope keeps evolving. Owners draft a new version with an AI-written summary of changes and compare versions before publishing."
+        screens={[
+          {
+            image: aiDraftedVersion,
+            alt: 'New Scope version with an AI-written summary of changes',
+            caption: 'Owner — AI-drafted version',
+            glow: 'squareLeft',
+          },
+          {
+            image: compareVersions,
+            alt: 'Side-by-side comparison of two Scope versions',
+            caption: 'Owner — compare versions',
+            glow: 'squareRight',
+          },
+        ]}
+      />
+    </section>
+
+    <!-- 08 — Also shipped -->
+    <section class="section section--features">
+      <SectionHead label="Also shipped" title="Everything around the chat, end to end." align="center" />
+      <Feature
+        label="Also shipped 01 / 03"
+        title="Public Scopes, with a safety check"
+        text="Owners can open a Scope to the whole organisation. Before it goes public, a check lists the connectors that still need their access changed."
+        screens={[
+          {
+            image: scopeMakePublic,
+            alt: 'Scope settings with the Public toggle',
+            caption: 'Scope — make public',
+            glow: 'squareEdge',
+          },
+          {
+            image: prePublishCheck,
+            alt: 'Pre-publish check listing connectors that need access changes',
+            caption: 'Owner — pre-publish check',
+            glow: 'squareCorner',
+          },
+        ]}
+      />
+      <Feature
+        label="Also shipped 02 / 03"
+        title="Knowledge Base for documents and media"
+        text="Documents can be processed in the default mode or by Databricks, and images, audio and video now live next to documents — with processing status and versions."
+        screens={[
+          {
+            image: kbAddNew,
+            alt: 'Adding a new Knowledge Base with a processing mode choice',
+            caption: 'Knowledge base — add new KB',
+            glow: 'squareLeft',
+          },
+          {
+            image: kbProcessing,
+            alt: 'Knowledge Base files with processing status',
+            caption: 'Knowledge base — KB processing',
+            glow: 'squareRight',
+          },
+        ]}
+      />
+      <Feature
+        label="Also shipped 03 / 03"
+        title="Wishlist and notifications"
+        text="People propose and vote on features and follow them from Proposed to Shipped. Notifications bring status changes and finished answers back to the workspace."
+        screens={[
+          {
+            image: productWishlist,
+            alt: 'Product Wishlist board with proposed features',
+            caption: 'Product wishlist',
+            glow: 'squareLeft',
+          },
+          {
+            image: notifications,
+            alt: 'Workspaces page with the notifications panel open',
+            caption: 'Workspaces — notifications',
+            glow: 'squareRight',
+          },
+        ]}
+      />
+    </section>
+
+    <!-- 09 — Outcome -->
+    <section class="section section--text">
+      <SectionHead label="Outcome" title="A clearer product model from setup to answer." />
+      <ol class="outcomes">
+        {
+          outcomes.map((row, i) => (
+            <li class="outcome">
+              <span class="outcome__num">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="outcome__title">{row.title}</h3>
+              <p class="outcome__text">{row.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+  </main>
+
+  <CaseFooter next={{ title: 'Artchain', href: '/work/artchain' }} />
+</Base>

@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Video FX</title>
+<style>
+  :root {
+    --bg: #0e0e10;
+    --panel: #16161a;
+    --line: #26262c;
+    --text: #ececef;
+    --muted: #8a8a94;
+    --accent: #0c3fee;
+    --radius: 10px;
+    font: 13px/1.4 ui-sans-serif, -apple-system, "Inter", system-ui, sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); }
+  body { display: grid; grid-template-columns: 320px 1fr; }
+  @media (max-width: 760px) { body { grid-template-columns: 1fr; } .stage { min-height: 70vh; order: -1; } }
+
+  .panel { background: var(--panel); border-right: 1px solid var(--line); overflow-y: auto; height: 100vh; }
+  @media (max-width: 760px) { .panel { height: auto; border-right: 0; } }
+  .panel header { padding: 20px 20px 12px; }
+  h1 { font-size: 16px; margin: 0 0 2px; font-weight: 600; }
+  header p { margin: 0; color: var(--muted); }
+  section { padding: 14px 20px 16px; border-top: 1px solid var(--line); }
+  h2 { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+
+  .row { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; margin-bottom: 10px; }
+  .row output { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .row input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); margin: 0; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .pair label { display: grid; gap: 4px; color: var(--text); }
+  input[type=number], select {
+    width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--line);
+    border-radius: 6px; padding: 6px 8px; font: inherit;
+  }
+  .check { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .check input { accent-color: var(--accent); }
+
+  button, .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    background: #22222a; color: var(--text); border: 1px solid var(--line); border-radius: 8px;
+    padding: 8px 12px; font: inherit; cursor: pointer;
+  }
+  button:hover, .btn:hover { background: #2a2a33; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  button.primary:hover { filter: brightness(1.1); }
+  button:disabled { opacity: .5; cursor: default; }
+  .btn input { display: none; }
+  .btns { display: flex; flex-wrap: wrap; gap: 6px; }
+  .full { width: 100%; }
+
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .preset { width: 44px; height: 24px; border-radius: 6px; border: 1px solid var(--line); cursor: pointer; padding: 0; }
+  .stops { display: flex; gap: 6px; margin-bottom: 12px; }
+  .stops input[type=color] { width: 44px; height: 32px; border: 1px solid var(--line); border-radius: 6px; background: none; padding: 2px; cursor: pointer; }
+  .stops input[type=color]:disabled { opacity: .25; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+  .seg button { border: 0; border-radius: 0; padding: 5px 12px; background: transparent; }
+  .seg button.on { background: #2e2e38; }
+
+  .muted { color: var(--muted); }
+  .small { font-size: 12px; }
+  #srcInfo { margin-top: 8px; }
+  .progress { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; margin: 10px 0 6px; display: none; }
+  .progress i { display: block; height: 100%; width: 0; background: var(--accent); }
+  #result a { color: #8fb0ff; }
+
+  .stage { position: relative; display: grid; place-items: center; padding: 32px 16px; overflow: hidden;
+    background: #1b1b20 radial-gradient(circle at 1px 1px, #2a2a31 1px, transparent 0) 0 0 / 16px 16px; }
+  .frame { position: relative; }
+  .frame canvas { filter: drop-shadow(0 20px 40px rgba(0,0,0,.45)); }
+  .frame canvas { display: block; width: 100%; height: 100%; }
+  .stage .meta { position: absolute; left: 16px; bottom: 12px; color: var(--muted); font-size: 12px; }
+  .drop { position: absolute; inset: 12px; border: 2px dashed var(--accent); border-radius: 16px; display: none;
+    place-items: center; background: rgba(12,63,238,.12); font-size: 15px; pointer-events: none; }
+  body.dragging .drop { display: grid; }
+</style>
+</head>
+<body>
+
+<aside class="panel">
+  <header>
+    <h1>Video FX</h1>
+    <p>Размытие · градиентная карта · зерно</p>
+  </header>
+
+  <section>
+    <h2>Источник</h2>
+    <label class="btn full">Выбрать видео<input type="file" id="file" accept="video/*"></label>
+    <div id="srcInfo" class="muted small">Пока тестовая анимация. Выбери видео или перетащи его в превью.</div>
+  </section>
+
+  <section id="secFrame">
+    <h2>Кадр</h2>
+    <div class="pair">
+      <label>Ширина, px<input type="number" id="w" min="64" max="3840" step="2"></label>
+      <label>Высота, px<input type="number" id="h" min="64" max="3840" step="2"></label>
+    </div>
+  </section>
+
+  <section id="secTrim">
+    <h2>Отрезок цикла</h2>
+  </section>
+
+  <section id="secBlur">
+    <h2>Размытие</h2>
+  </section>
+
+  <section id="secMap">
+    <h2>Градиентная карта</h2>
+    <div class="presets" id="presets"></div>
+    <div class="seg" id="stopCount"></div>
+    <div class="stops" id="stops"></div>
+  </section>
+
+  <section id="secGrain">
+    <h2>Зерно</h2>
+  </section>
+
+  <section id="secRound">
+    <h2>Скругление</h2>
+    <label class="check"><input type="checkbox" id="mask"> Показывать в превью</label>
+    <label class="check"><input type="checkbox" id="bake"> Вшить в видео</label>
+    <label class="pair" id="bgRow"><span>Цвет углов<br><span class="muted small">под фон сайта</span></span><input type="color" id="bg"></label>
+  </section>
+
+  <section id="secPreview">
+    <h2>Превью</h2>
+    <label class="check"><input type="checkbox" id="siteSize"> Размер как на сайте (½ от экспорта)</label>
+  </section>
+
+  <section>
+    <h2>Экспорт</h2>
+    <div class="pair">
+      <label>Формат<select id="format">
+        <option value="auto">Авто</option>
+        <option value="mp4">MP4</option>
+        <option value="webm">WebM</option>
+      </select></label>
+      <label>FPS<select id="fps">
+        <option>24</option><option>25</option><option>30</option><option>60</option>
+      </select></label>
+    </div>
+    <div id="secBitrate"></div>
+    <div class="btns">
+      <button class="primary" id="export">Экспорт видео</button>
+      <button id="poster">Постер JPG</button>
+    </div>
+    <div class="progress" id="progress"><i></i></div>
+    <div id="result" class="small muted"></div>
+    <p class="small muted">Запись идёт в реальном времени: 10 секунд ролика — примерно 10 секунд экспорта. Скругление попадает в файл, только если включено «Вшить в видео». Иначе его делает сайт.</p>
+    <div class="btns">
+      <button id="copy">Копировать настройки</button>
+      <button id="reset">Сбросить</button>
+    </div>
+  </section>
+</aside>
+
+<main class="stage" id="stage">
+  <div class="frame" id="frame"><canvas id="c"></canvas></div>
+  <div class="meta" id="meta"></div>
+  <div class="drop">Отпусти, чтобы загрузить видео</div>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+
+// ---------- State ----------
+const DEFAULTS = {
+  w: 654, h: 960,
+  zoom: 1, offX: 0, offY: 0,
+  start: 0, end: 0, speed: 1,
+  blur: 48,
+  stops: 3, c0: '#0c3fee', c1: '#ff5fa2', c2: '#ff8a00', c3: '#f4ff7a',
+  black: 0.08, white: 0.92, gamma: 1, amount: 1, sat: 0,
+  grain: 0.08, grainSize: 1.5, grainFps: 24,
+  radius: 160, smooth: 2, mask: true, bake: false, bg: '#ffffff', siteSize: true,
+  format: 'auto', fps: 30, bitrate: 6,
+};
+const PRESETS = [
+  ['#0c3fee', '#ff5fa2', '#ff8a00'],
+  ['#b0175e', '#ff8fc0', '#e8f76b'],
+  ['#07071a', '#0c3fee', '#8fd0ff', '#ffffff'],
+  ['#1a0b2e', '#ff3d6e', '#ffb347', '#fff4c2'],
+  ['#0f2a1d', '#1f8a5b', '#d8f3a8'],
+  ['#111111', '#f2f2f2'],
+];
+const STORE_KEY = 'video-fx-settings';
+const PERSIST = Object.keys(DEFAULTS).filter(k => k !== 'start' && k !== 'end');
+
+let S = { ...DEFAULTS };
+try {
+  const saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}');
+  for (const k of PERSIST) if (k in saved) S[k] = saved[k];
+} catch (e) {}
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(Object.fromEntries(PERSIST.map(k => [k, S[k]])))); } catch (e) {}
+}
+
+// ---------- Controls ----------
+const ctrls = {};
+function range(parent, key, label, min, max, step, fmt = v => v) {
+  const row = document.createElement('label');
+  row.className = 'row';
+  row.innerHTML = `<span>${label}</span><output></output><input type="range" min="${min}" max="${max}" step="${step}">`;
+  const inp = row.querySelector('input'), out = row.querySelector('output');
+  inp.value = S[key]; out.textContent = fmt(S[key]);
+  inp.addEventListener('input', () => { S[key] = +inp.value; out.textContent = fmt(S[key]); onChange(key); });
+  parent.append(row);
+  ctrls[key] = { inp, out, fmt };
+  return inp;
+}
+function setCtrl(key, v) {
+  S[key] = v;
+  const c = ctrls[key];
+  if (c) { c.inp.value = v; c.out.textContent = c.fmt(v); }
+}
+const pct = v => Math.round(v * 100) + '%';
+const sec = v => (+v).toFixed(2) + ' с';
+
+range($('#secFrame'), 'zoom', 'Масштаб', 1, 4, 0.01, v => v.toFixed(2) + '×');
+range($('#secFrame'), 'offX', 'Сдвиг по X', -0.5, 0.5, 0.01, pct);
+range($('#secFrame'), 'offY', 'Сдвиг по Y', -0.5, 0.5, 0.01, pct);
+range($('#secTrim'), 'start', 'Начало', 0, 0, 0.01, sec);
+range($('#secTrim'), 'end', 'Конец', 0, 0, 0.01, sec);
+range($('#secTrim'), 'speed', 'Скорость', 0.25, 2, 0.05, v => v.toFixed(2) + '×');
+range($('#secBlur'), 'blur', 'Радиус, px', 0, 160, 1);
+range($('#secMap'), 'black', 'Точка чёрного', 0, 1, 0.01, pct);
+range($('#secMap'), 'white', 'Точка белого', 0, 1, 0.01, pct);
+range($('#secMap'), 'gamma', 'Гамма', 0.3, 3, 0.01, v => v.toFixed(2));
+range($('#secMap'), 'amount', 'Сила карты', 0, 1, 0.01, pct);
+range($('#secMap'), 'sat', 'Насыщенность исходника', -1, 1, 0.01, v => (v > 0 ? '+' : '') + pct(v));
+range($('#secGrain'), 'grain', 'Сила', 0, 0.4, 0.005, pct);
+range($('#secGrain'), 'grainSize', 'Размер', 1, 4, 0.1, v => v.toFixed(1) + ' px');
+range($('#secGrain'), 'grainFps', 'Смена зерна, к/с', 0, 60, 1, v => v ? v : 'статичное');
+const roundTop = $('#secRound h2').nextSibling;
+$('#secRound').insertBefore(range($('#secRound'), 'radius', 'Радиус, px (на сайте)', 0, 400, 1).parentNode, roundTop);
+$('#secRound').insertBefore(range($('#secRound'), 'smooth', 'Форма углов', 2, 6, 0.1, v => v <= 2.05 ? 'круг' : 'сквиркл ' + v.toFixed(1)).parentNode, roundTop);
+range($('#secBitrate'), 'bitrate', 'Битрейт', 1, 20, 0.5, v => v + ' Мбит/с');
+
+// Size inputs
+$('#w').value = S.w; $('#h').value = S.h;
+for (const k of ['w', 'h']) $('#' + k).addEventListener('change', e => {
+  S[k] = Math.max(64, Math.min(3840, Math.round(+e.target.value / 2) * 2 || DEFAULTS[k]));
+  e.target.value = S[k];
+  onChange(k);
+});
+
+// Checkboxes / selects
+$('#mask').checked = S.mask;
+$('#siteSize').checked = S.siteSize;
+$('#mask').addEventListener('change', e => { S.mask = e.target.checked; onChange('mask'); });
+$('#bake').checked = S.bake;
+$('#bg').value = S.bg;
+$('#bake').addEventListener('change', e => { S.bake = e.target.checked; onChange('bake'); });
+$('#bg').addEventListener('input', e => { S.bg = e.target.value; onChange('bg'); });
+const syncBake = () => $('#bgRow').style.display = S.bake ? '' : 'none';
+syncBake();
+$('#siteSize').addEventListener('change', e => { S.siteSize = e.target.checked; onChange('siteSize'); });
+$('#format').value = S.format;
+$('#fps').value = S.fps;
+$('#format').addEventListener('change', e => { S.format = e.target.value; save(); });
+$('#fps').addEventListener('change', e => { S.fps = +e.target.value; save(); });
+
+// Gradient stops
+const colorInputs = [0, 1, 2, 3].map(i => {
+  const inp = document.createElement('input');
+  inp.type = 'color'; inp.value = S['c' + i];
+  inp.addEventListener('input', () => { S['c' + i] = inp.value; onChange('c' + i); });
+  $('#stops').append(inp);
+  return inp;
+});
+const countBtns = [2, 3, 4].map(n => {
+  const b = document.createElement('button');
+  b.textContent = n + ' цвета';
+  b.addEventListener('click', () => { S.stops = n; syncStops(); onChange('stops'); });
+  $('#stopCount').append(b);
+  return b;
+});
+function syncStops() {
+  countBtns.forEach((b, i) => b.classList.toggle('on', i + 2 === S.stops));
+  colorInputs.forEach((c, i) => { c.disabled = i >= S.stops; c.value = S['c' + i]; });
+}
+PRESETS.forEach(p => {
+  const b = document.createElement('button');
+  b.className = 'preset';
+  b.title = p.join(' → ');
+  b.style.background = `linear-gradient(90deg, ${p.join(',')})`;
+  b.addEventListener('click', () => {
+    S.stops = p.length;
+    p.forEach((c, i) => S['c' + i] = c);
+    syncStops(); onChange('stops');
+  });
+  $('#presets').append(b);
+});
+syncStops();
+
+// ---------- WebGL ----------
+const canvas = $('#c');
+const gl = canvas.getContext('webgl', { preserveDrawingBuffer: true, premultipliedAlpha: false, antialias: false });
+if (!gl) alert('WebGL недоступен в этом браузере');
+
+const VERT = `attribute vec2 p; varying vec2 uv;
+void main(){ uv = p * 0.5 + 0.5; gl_Position = vec4(p, 0.0, 1.0); }`;
+
+// Pass 1: cover-crop the source and downsample with a 3x3 box to avoid shimmer.
+const FRAG_CROP = `precision highp float; varying vec2 uv;
+uniform sampler2D src; uniform vec2 scale, offset, foot;
+void main(){
+  vec2 st = (uv - 0.5) * scale + 0.5 + offset * (1.0 - scale);
+  vec3 c = vec3(0.0);
+  for (int x = -1; x <= 1; x++) for (int y = -1; y <= 1; y++)
+    c += texture2D(src, st + vec2(float(x), float(y)) * foot / 3.0).rgb;
+  gl_FragColor = vec4(c / 9.0, 1.0);
+}`;
+
+// Pass 2/3: separable gaussian, taps spread over ±3 sigma.
+const FRAG_BLUR = `precision highp float; varying vec2 uv;
+uniform sampler2D src; uniform vec2 dir; uniform float sigma;
+void main(){
+  float stride = sigma * 3.0 / 8.0;
+  vec3 c = vec3(0.0); float wsum = 0.0;
+  for (int i = -8; i <= 8; i++) {
+    float o = float(i) * stride;
+    float w = exp(-(o * o) / (2.0 * sigma * sigma + 1e-4));
+    c += texture2D(src, uv + dir * o).rgb * w; wsum += w;
+  }
+  gl_FragColor = vec4(c / wsum, 1.0);
+}`;
+
+// Pass 4: saturation, levels, gradient map, grain.
+const FRAG_FINAL = `precision highp float; varying vec2 uv;
+uniform sampler2D src; uniform vec3 c0, c1, c2, c3; uniform float stops;
+uniform float black, white, gamma, amount, sat, grain, grainSize, seed;
+uniform vec2 size; uniform float radius, smoothness, maskMode; uniform vec3 bg;
+// Rounded rect with superellipse corners: n = 2 is a circle, higher is a squircle.
+float cornerDist(vec2 p){
+  vec2 q = abs(p - size * 0.5) - (size * 0.5 - radius);
+  if (q.x > 0.0 && q.y > 0.0) return pow(pow(q.x, smoothness) + pow(q.y, smoothness), 1.0 / smoothness) - radius;
+  return max(q.x, q.y) - radius;
+}
+float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+vec3 ramp(float t){
+  float x = t * (stops - 1.0);
+  if (x < 1.0) return mix(c0, c1, x);
+  if (x < 2.0) return mix(c1, c2, x - 1.0);
+  return mix(c2, c3, x - 2.0);
+}
+void main(){
+  vec3 c = texture2D(src, uv).rgb;
+  float l = dot(c, vec3(0.2126, 0.7152, 0.0722));
+  c = mix(vec3(l), c, 1.0 + sat);
+  float t = clamp((l - black) / max(white - black, 1e-3), 0.0, 1.0);
+  t = pow(t, gamma);
+  vec3 col = mix(c, ramp(t), amount);
+  vec2 cell = floor(gl_FragCoord.xy / grainSize);
+  float n = hash(cell + seed * 17.13) + hash(cell * 1.37 - seed * 3.1) - 1.0;
+  col += n * grain;
+  col = clamp(col, 0.0, 1.0);
+  float inside = maskMode > 0.5 ? clamp(0.5 - cornerDist(gl_FragCoord.xy), 0.0, 1.0) : 1.0;
+  if (maskMode > 1.5) gl_FragColor = vec4(mix(bg, col, inside), 1.0);
+  else gl_FragColor = vec4(col, inside);
+}`;
+
+function program(fs) {
+  const p = gl.createProgram();
+  for (const [type, src] of [[gl.VERTEX_SHADER, VERT], [gl.FRAGMENT_SHADER, fs]]) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    gl.attachShader(p, s);
+  }
+  gl.bindAttribLocation(p, 0, 'p');
+  gl.linkProgram(p);
+  const u = {};
+  const n = gl.getProgramParameter(p, gl.ACTIVE_UNIFORMS);
+  for (let i = 0; i < n; i++) { const name = gl.getActiveUniform(p, i).name; u[name] = gl.getUniformLocation(p, name); }
+  return { p, u };
+}
+const P_CROP = program(FRAG_CROP), P_BLUR = program(FRAG_BLUR), P_FINAL = program(FRAG_FINAL);
+
+gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+gl.enableVertexAttribArray(0);
+gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+function texture() {
+  const t = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, t);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  return t;
+}
+const srcTex = texture();
+let fbos = null, fboKey = '';
+function ensureFbos(w, h) {
+  const key = w + 'x' + h;
+  if (key === fboKey) return;
+  if (fbos) fbos.forEach(f => { gl.deleteTexture(f.tex); gl.deleteFramebuffer(f.fb); });
+  fbos = [0, 1].map(() => {
+    const tex = texture();
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    const fb = gl.createFramebuffer();
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+    return { tex, fb, w, h };
+  });
+  fboKey = key;
+}
+const hex = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255);
+
+function pass(prog, target, input, w, h) {
+  gl.bindFramebuffer(gl.FRAMEBUFFER, target ? target.fb : null);
+  gl.viewport(0, 0, w, h);
+  gl.useProgram(prog.p);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, input);
+  gl.uniform1i(prog.u.src, 0);
+}
+const draw = () => gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+// ---------- Sources ----------
+let video = null, videoName = '';
+const test = document.createElement('canvas');
+test.width = 540; test.height = 720;
+const tctx = test.getContext('2d');
+function drawTest(t) {
+  const s = t / 1000;
+  tctx.fillStyle = '#222'; tctx.fillRect(0, 0, 540, 720);
+  const blobs = [[0.3, 0.3, 180, '#fff'], [0.7, 0.55, 220, '#888'], [0.45, 0.8, 160, '#ccc'], [0.5, 0.45, 120, '#eee']];
+  blobs.forEach(([x, y, r, c], i) => {
+    tctx.fillStyle = c;
+    tctx.beginPath();
+    tctx.arc(540 * x + Math.sin(s * 0.9 + i * 2) * 80, 720 * y + Math.cos(s * 0.7 + i) * 90, r, 0, Math.PI * 2);
+    tctx.fill();
+  });
+}
+
+function loadFile(file) {
+  if (!file || !file.type.startsWith('video/')) { alert('Это не видеофайл'); return; }
+  if (video) { video.pause(); URL.revokeObjectURL(video.src); }
+  const v = document.createElement('video');
+  v.muted = true; v.loop = true; v.playsInline = true; v.crossOrigin = 'anonymous';
+  v.src = URL.createObjectURL(file);
+  v.addEventListener('loadedmetadata', () => {
+    video = v; videoName = file.name.replace(/\.[^.]+$/, '');
+    for (const k of ['start', 'end']) ctrls[k].inp.max = v.duration.toFixed(2);
+    setCtrl('start', 0); setCtrl('end', +v.duration.toFixed(2));
+    v.playbackRate = S.speed;
+    v.play();
+    $('#srcInfo').textContent = `${file.name} · ${v.videoWidth}×${v.videoHeight} · ${v.duration.toFixed(1)} с · ${(file.size / 1048576).toFixed(1)} МБ`;
+  }, { once: true });
+  v.addEventListener('error', () => alert('Браузер не смог открыть это видео. Попробуй MP4 (H.264) или WebM.'));
+}
+$('#file').addEventListener('change', e => loadFile(e.target.files[0]));
+let dragDepth = 0;
+addEventListener('dragenter', e => { e.preventDefault(); dragDepth++; document.body.classList.add('dragging'); });
+addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; document.body.classList.remove('dragging'); } });
+addEventListener('dragover', e => e.preventDefault());
+addEventListener('drop', e => {
+  e.preventDefault(); dragDepth = 0; document.body.classList.remove('dragging');
+  loadFile(e.dataTransfer.files[0]);
+});
+
+// ---------- Render ----------
+let exporting = false, plainFrame = false;
+// 0: no mask, 1: transparent corners (preview only), 2: corners filled with bg (baked into files)
+const maskMode = () => S.bake ? 2 : (exporting || plainFrame || !S.mask) ? 0 : 1;
+function render(t) {
+  let src, sw, sh;
+  if (video && video.readyState >= 2) {
+    src = video; sw = video.videoWidth; sh = video.videoHeight;
+    if (!exporting && S.end > S.start && (video.currentTime >= S.end || video.currentTime < S.start - 0.05)) video.currentTime = S.start;
+  } else {
+    drawTest(t); src = test; sw = test.width; sh = test.height;
+  }
+
+  gl.bindTexture(gl.TEXTURE_2D, srcTex);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+
+  const W = S.w, H = S.h;
+  // Downsample more for bigger blurs: cheaper and smoother.
+  const ds = Math.max(1, Math.min(8, Math.round(S.blur / 10)));
+  const bw = Math.ceil(W / ds), bh = Math.ceil(H / ds);
+  ensureFbos(bw, bh);
+
+  // Cover-fit crop
+  const va = sw / sh, ca = W / H;
+  const sx = (va > ca ? ca / va : 1) / S.zoom, sy = (va > ca ? 1 : va / ca) / S.zoom;
+  pass(P_CROP, fbos[0], srcTex, bw, bh);
+  gl.uniform2f(P_CROP.u.scale, sx, sy);
+  gl.uniform2f(P_CROP.u.offset, S.offX, -S.offY);
+  gl.uniform2f(P_CROP.u.foot, sx / bw, sy / bh);
+  draw();
+
+  const sigma = S.blur * 0.5 / ds;
+  pass(P_BLUR, fbos[1], fbos[0].tex, bw, bh);
+  gl.uniform2f(P_BLUR.u.dir, 1 / bw, 0); gl.uniform1f(P_BLUR.u.sigma, sigma);
+  draw();
+  pass(P_BLUR, fbos[0], fbos[1].tex, bw, bh);
+  gl.uniform2f(P_BLUR.u.dir, 0, 1 / bh); gl.uniform1f(P_BLUR.u.sigma, sigma);
+  draw();
+
+  pass(P_FINAL, null, fbos[0].tex, W, H);
+  const u = P_FINAL.u;
+  for (let i = 0; i < 4; i++) gl.uniform3fv(u['c' + i], hex(S['c' + Math.min(i, S.stops - 1)]));
+  gl.uniform1f(u.stops, S.stops);
+  gl.uniform1f(u.black, S.black); gl.uniform1f(u.white, S.white);
+  gl.uniform1f(u.gamma, S.gamma); gl.uniform1f(u.amount, S.amount); gl.uniform1f(u.sat, S.sat);
+  gl.uniform1f(u.grain, S.grain); gl.uniform1f(u.grainSize, S.grainSize);
+  gl.uniform1f(u.seed, S.grainFps ? Math.floor(t / 1000 * S.grainFps) % 997 : 1);
+  gl.uniform2f(u.size, W, H);
+  // Radius is in site px; the site shows the video at half the export size.
+  gl.uniform1f(u.radius, Math.min(S.radius * 2, W / 2, H / 2));
+  gl.uniform1f(u.smoothness, S.smooth);
+  gl.uniform1f(u.maskMode, maskMode());
+  gl.uniform3fv(u.bg, hex(S.bg));
+  draw();
+
+  requestAnimationFrame(render);
+}
+
+// ---------- Layout ----------
+function layout() {
+  canvas.width = S.w; canvas.height = S.h;
+  const stage = $('#stage');
+  const maxW = stage.clientWidth - 32, maxH = stage.clientHeight - 64;
+  let dw = Math.min(maxW, maxH * S.w / S.h);
+  if (S.siteSize) dw = Math.min(dw, S.w / 2);
+  const dh = dw * S.h / S.w;
+  const frame = $('#frame');
+  frame.style.width = dw + 'px'; frame.style.height = dh + 'px';
+  $('#meta').textContent = `Экспорт ${S.w}×${S.h} · на сайте ${S.w / 2}×${S.h / 2} · превью ${Math.round(dw)}×${Math.round(dh)}`;
+}
+new ResizeObserver(layout).observe($('#stage'));
+
+function onChange(key) {
+  if (key === 'speed' && video) video.playbackRate = S.speed;
+  if (key === 'start' && S.start > S.end - 0.1) setCtrl('start', Math.max(0, +(S.end - 0.1).toFixed(2)));
+  if (key === 'end' && S.end < S.start + 0.1) setCtrl('end', +(S.start + 0.1).toFixed(2));
+  if (key === 'start' && video) video.currentTime = S.start;
+  if (key === 'bake') syncBake();
+  if (['w', 'h', 'siteSize'].includes(key)) layout();
+  save();
+}
+
+// ---------- Export ----------
+function pickMime() {
+  const mp4 = ['video/mp4;codecs=avc1.640028', 'video/mp4;codecs=avc1.42E01E', 'video/mp4;codecs=avc1', 'video/mp4'];
+  const webm = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+  const list = S.format === 'mp4' ? mp4 : S.format === 'webm' ? webm : [...mp4, ...webm];
+  return list.find(m => window.MediaRecorder && MediaRecorder.isTypeSupported(m));
+}
+const seek = t => new Promise(r => { video.addEventListener('seeked', r, { once: true }); video.currentTime = t; });
+function download(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.append(a); a.click(); a.remove();
+  return a.href;
+}
+
+$('#export').addEventListener('click', async () => {
+  if (!video) { alert('Сначала загрузи видео.'); return; }
+  const mime = pickMime();
+  if (!mime) { alert('Этот браузер не умеет записывать ' + (S.format === 'auto' ? 'видео' : S.format.toUpperCase()) + '. Попробуй другой формат или Chrome.'); return; }
+  const ext = mime.includes('mp4') ? 'mp4' : 'webm';
+  const btn = $('#export'), bar = $('#progress'), fill = bar.querySelector('i');
+  btn.disabled = true; bar.style.display = 'block'; fill.style.width = '0';
+  $('#result').textContent = `Записываю ${ext.toUpperCase()}…`;
+
+  exporting = true;
+  video.pause(); video.loop = false;
+  await seek(S.start);
+
+  const stream = canvas.captureStream(S.fps);
+  const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: S.bitrate * 1e6 });
+  const chunks = [];
+  rec.ondataavailable = e => e.data.size && chunks.push(e.data);
+  const stopped = new Promise(r => rec.onstop = r);
+  rec.start(250);
+  await video.play();
+  await new Promise(r => {
+    const tick = () => {
+      fill.style.width = Math.min(100, (video.currentTime - S.start) / (S.end - S.start) * 100) + '%';
+      if (video.currentTime >= S.end - 0.02 || video.ended) r(); else requestAnimationFrame(tick);
+    };
+    tick();
+  });
+  rec.stop(); video.pause();
+  await stopped;
+  stream.getTracks().forEach(t => t.stop());
+
+  const blob = new Blob(chunks, { type: mime.split(';')[0] });
+  const name = `${videoName || 'video'}-fx.${ext}`;
+  const url = download(blob, name);
+  $('#result').innerHTML = `Готово: <a href="${url}" download="${name}">${name}</a> · ${(blob.size / 1048576).toFixed(2)} МБ · ${mime}`;
+  fill.style.width = '100%';
+
+  exporting = false; video.loop = true;
+  video.currentTime = S.start; video.play();
+  btn.disabled = false;
+});
+
+$('#poster').addEventListener('click', () => {
+  // Render one frame without the preview-only mask so JPG corners aren't black.
+  plainFrame = true;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    canvas.toBlob(b => download(b, `${videoName || 'video'}-poster.jpg`), 'image/jpeg', 0.9);
+    plainFrame = false;
+  }));
+});
+$('#copy').addEventListener('click', async () => {
+  const json = JSON.stringify(Object.fromEntries(PERSIST.map(k => [k, S[k]])), null, 2);
+  try { await navigator.clipboard.writeText(json); $('#result').textContent = 'Настройки скопированы.'; }
+  catch (e) { prompt('Скопируй настройки:', json); }
+});
+$('#reset').addEventListener('click', () => {
+  const keep = { start: S.start, end: S.end };
+  S = { ...DEFAULTS, ...keep };
+  for (const k in ctrls) setCtrl(k, S[k]);
+  $('#w').value = S.w; $('#h').value = S.h;
+  $('#mask').checked = S.mask; $('#siteSize').checked = S.siteSize;
+  $('#bake').checked = S.bake; $('#bg').value = S.bg; syncBake();
+  $('#format').value = S.format; $('#fps').value = S.fps;
+  if (video) video.playbackRate = S.speed;
+  syncStops(); layout(); save();
+});
+
+layout();
+requestAnimationFrame(render);
+</script>
+</body>
+</html>

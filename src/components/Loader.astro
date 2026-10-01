@@ -1,0 +1,108 @@
+---
+// Intro loader (after stanreimgen.space): a single line on the page background whose letters
+// sharpen out of a blur one by one, then the page fades in. Shown once per browser session, on the
+// first page visited. The inline script in <head> (see Base.astro) decides before first paint, so a
+// returning visitor never sees a flash of it — and without JavaScript it never appears at all.
+---
+
+<div class="loader" aria-hidden="true">
+  <p class="loader__text" data-loader-text>It's a lovely day in Prague</p>
+</div>
+
+<script>
+  const root = document.documentElement;
+  const loader = document.querySelector<HTMLElement>('.loader');
+  const text = document.querySelector<HTMLElement>('[data-loader-text]');
+
+  if (loader && text && root.classList.contains('show-loader')) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // "It's a lovely evening in Prague" — part of day in Prague, where Pavel is.
+    const hour = Number(
+      new Intl.DateTimeFormat('en-GB', { hour: 'numeric', hour12: false, timeZone: 'Europe/Prague' }).format(
+        new Date(),
+      ),
+    );
+    const part = hour < 5 ? 'night' : hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : hour < 22 ? 'evening' : 'night';
+    const line = `It's a lovely ${part} in Prague`;
+
+    // One span per character so each can blur in on its own delay.
+    text.textContent = '';
+    [...line].forEach((ch, i) => {
+      const span = document.createElement('span');
+      span.textContent = ch;
+      span.style.setProperty('--i', String(i));
+      text.appendChild(span);
+    });
+
+    const revealEnd = reduced ? 0 : 300 + line.length * 28 + 500;
+    const hold = reduced ? 600 : 900;
+
+    window.setTimeout(() => {
+      root.classList.add('loader-done');
+      // Remove the overlay once it has faded out.
+      window.setTimeout(() => {
+        root.classList.remove('show-loader', 'loader-done');
+        loader.remove();
+      }, 600);
+    }, revealEnd + hold);
+  } else {
+    loader?.remove();
+  }
+</script>
+
+<style is:global>
+  .loader {
+    display: none;
+  }
+
+  html.show-loader .loader {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    background: var(--color-bg);
+    transition: opacity 600ms ease;
+  }
+  html.show-loader body {
+    overflow: hidden;
+  }
+  html.loader-done .loader {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .loader__text {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text);
+    white-space: pre;
+  }
+  .loader__text span {
+    display: inline-block;
+    white-space: pre;
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(2px);
+    animation: loader-letter 500ms cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+    animation-delay: calc(300ms + var(--i) * 28ms);
+  }
+  @keyframes loader-letter {
+    to {
+      opacity: 1;
+      filter: blur(0);
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .loader__text span {
+      filter: none;
+      transform: none;
+      animation-duration: 1ms;
+      animation-delay: 0ms;
+    }
+  }
+</style>

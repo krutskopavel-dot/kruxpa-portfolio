@@ -1,0 +1,138 @@
+---
+import { Image } from 'astro:assets';
+import logoMark from '../assets/home/logo-mark.png';
+import { site } from '../site';
+import { experience } from '../lib/experience';
+
+const links = [
+  { label: 'Work', href: '/#work' },
+  { label: 'About', href: '/#about' },
+  { label: 'Contact', href: '/#contact' },
+];
+---
+
+<header class="header">
+  <a class="brand" href="/" aria-label={`${site.name}, home`}>
+    <span class="brand__mark">
+      <Image src={logoMark} alt="" widths={[114, 228]} sizes="57px" loading="eager" />
+    </span>
+    <span class="brand__text">
+      <span class="eyebrow">{site.name}</span>
+      <span class="brand__role">{site.role}</span>
+    </span>
+  </a>
+
+  <nav class="nav" aria-label="Main">
+    {links.map((link) => <a class="nav__link" href={link.href}>{link.label}</a>)}
+  </nav>
+
+  <p class="experience">
+    <span class="eyebrow">Experience in design</span>
+    <!-- Rendered at build time, refreshed in the browser so it never goes stale -->
+    <span class="experience__value" data-since={site.experienceSince}>{experience(site.experienceSince)}</span>
+  </p>
+</header>
+
+<script>
+  import { experience } from '../lib/experience';
+
+  document.querySelectorAll<HTMLElement>('[data-since]').forEach((el) => {
+    el.textContent = experience(el.dataset.since!);
+  });
+</script>
+
+<style>
+  .header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 16px var(--page-inset) 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* The source image is a wider sheet; show the monogram at its Figma crop. */
+  .brand__mark {
+    position: relative;
+    flex: none;
+    width: 57px;
+    height: 56px;
+    overflow: hidden;
+  }
+  .brand__mark :global(img) {
+    position: absolute;
+    left: -43.19%;
+    top: -0.12%;
+    width: 186.38%;
+    max-width: none;
+    height: 100.61%;
+  }
+
+  .brand__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    white-space: nowrap;
+  }
+  .brand__role {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text);
+  }
+
+  /* Centred on the page, independent of the brand and counter widths */
+  .nav {
+    position: absolute;
+    left: 50%;
+    top: 34px;
+    display: flex;
+    gap: 32px;
+    transform: translateX(-50%);
+  }
+  .nav__link {
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--color-text-secondary);
+    transition: color 150ms ease;
+  }
+  .nav__link:hover {
+    color: var(--color-text);
+  }
+
+  /* Mirrors the brand block: mono label, 2px gap, value set like the role line. */
+  .experience {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    white-space: nowrap;
+  }
+  .experience__value {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 900px) {
+    .nav {
+      display: none;
+    }
+  }
+  @media (max-width: 480px) {
+    .brand__role {
+      display: none;
+    }
+    .experience .eyebrow {
+      font-size: 10px;
+    }
+  }
+</style>

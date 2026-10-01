@@ -1,0 +1,67 @@
+---
+import { Image } from 'astro:assets';
+import ActionGroup from './ActionGroup.astro';
+import wordmark from '../assets/home/wordmark.png';
+---
+
+<section class="cta" id="contact" aria-labelledby="cta-title">
+  <div class="cta__wordmark">
+    <Image src={wordmark} alt="" widths={[418, 836, 1254]} sizes="418px" />
+  </div>
+  <div class="cta__body">
+    <h2 class="cta__title" id="cta-title">Let’s build clear products from complex systems.</h2>
+    <ActionGroup id="cta" />
+  </div>
+</section>
+
+<style>
+  /* Compact closing block on the page background; the link footer follows below. */
+  .cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--section-gap) var(--content-inset) 120px;
+    text-align: center;
+  }
+
+  /* The source image is square; show the chrome wordmark at its Figma crop (599×224),
+     scaled down to 400px wide. */
+  .cta__wordmark {
+    position: relative;
+    width: min(400px, 100%);
+    aspect-ratio: 599 / 224;
+    overflow: hidden;
+  }
+  .cta__wordmark :global(img) {
+    position: absolute;
+    left: -2.25%;
+    top: -89.96%;
+    width: 104.5%;
+    max-width: none;
+    height: 279.91%;
+  }
+
+  .cta__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+  .cta__title {
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 32px;
+    letter-spacing: -0.02em;
+    color: #000;
+  }
+
+  @media (max-width: 720px) {
+    .cta {
+      min-height: 0;
+      padding-block: 80px;
+    }
+    .cta__body {
+      gap: 24px;
+    }
+  }
+</style>

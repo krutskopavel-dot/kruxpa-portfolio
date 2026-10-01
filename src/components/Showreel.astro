@@ -1,0 +1,452 @@
+---
+// Hero showreel: four animated product scenes (Artchain → Yachtswaps → Propeller → DISio) inside a
+// 1408×720 tile. The screen is a 1440×900 stage laid out in stage pixels and fitted with CSS `zoom`.
+// Layers are 2× PNG sources in src/assets/showreel, served as WebP at 1.5× the stage size.
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+const sources = import.meta.glob<ImageMetadata>('../assets/showreel/*.png', { eager: true, import: 'default' });
+
+const src: Record<string, string> = {};
+for (const [path, image] of Object.entries(sources)) {
+  const name = path.split('/').pop()!.replace('.png', '');
+  const { src: url } = await getImage({ src: image, width: Math.round(image.width * 0.75), format: 'webp', quality: 92 });
+  src[name] = url;
+}
+
+const pins = [
+  ['a', 889, 689],
+  ['a', 934, 667],
+  ['a', 875, 613],
+  ['a', 978, 553],
+  ['a', 934, 493],
+  ['a', 983, 405],
+  ['c', 1030, 347],
+  ['a', 1208, 400],
+  ['c', 1241, 360],
+  ['a', 1290, 338],
+] as const;
+
+const yCards = [
+  [23, 231],
+  [403, 231],
+  [23, 599],
+  [403, 599],
+] as const;
+
+// KPI numbers roll up inside their own slots (cropped from the full layer).
+const ticks = [
+  [44, 342, 246, 64],
+  [507, 356, 28, 50],
+  [809, 356, 160, 50],
+  [1110, 356, 28, 50],
+  [1193, 356, 28, 50],
+] as const;
+---
+
+<section
+  class="reel"
+  aria-label="Showreel: Artchain inventory, Yachtswaps map search, Propeller dashboard and DISio scope versions"
+  style={`--y-detail: url(${src['y-detail']}); --p-full: url(${src['p-full']})`}
+>
+  <div class="reel__glow reel__glow--artchain" data-glow="artchain"></div>
+  <div class="reel__glow reel__glow--disio" data-glow="disio"></div>
+  <div class="reel__glow reel__glow--yachts" data-glow="yachts"></div>
+  <div class="reel__glow reel__glow--propeller" data-glow="propeller"></div>
+
+  <div class="reel__screen">
+    <div class="stage" aria-hidden="true">
+      <!-- Scene A · Artchain · Inventory -->
+      <div class="scene" data-scene="artchain">
+        <img class="layer chrome chrome--table" src={src['a-chrome-table']} alt="" />
+        <img class="layer chrome chrome--grid" src={src['a-chrome-grid']} alt="" />
+
+        <div class="row" style="top:268px"><img src={src['a-row-1']} alt="" /></div>
+        <div class="row" style="top:428px"><img src={src['a-row-2']} alt="" /></div>
+        <div class="row row--target" style="top:588px">
+          <img src={src['a-row-3']} alt="" />
+          <div class="row__hover"></div>
+          <div class="badge-swap" style="left:1070px; top:66px; width:97px; height:28px">
+            <img src={src['a-badge-approved']} alt="" />
+          </div>
+        </div>
+        <div class="row" style="top:748px"><img src={src['a-row-4']} alt="" /></div>
+
+        <div class="card" style="left:80px"><img src={src['a-card-1']} alt="" /></div>
+        <div class="card" style="left:410px"><img src={src['a-card-2']} alt="" /></div>
+        <div class="card" style="left:740px">
+          <img src={src['a-card-3']} alt="" />
+          <div class="badge-swap badge-swap--card" style="left:22px; top:22px; width:98px; height:28px">
+            <img src={src['a-badge-approved']} alt="" />
+          </div>
+        </div>
+        <div class="card" style="left:1070px"><img src={src['a-card-4']} alt="" /></div>
+      </div>
+
+      <!-- Scene B · DISio · Scope versions -->
+      <div class="scene" data-scene="disio">
+        <img class="layer" src={src['d-list']} alt="" />
+        <img class="layer d-generating" src={src['d-generating']} alt="" />
+        <div class="shimmer"></div>
+        <img class="layer d-generated" src={src['d-generated']} alt="" />
+        <div class="overlay"></div>
+        <img class="modal" src={src['d-compare-modal']} alt="" />
+      </div>
+
+      <!-- Scene C · Yachtswaps · Search on the map -->
+      <div class="scene" data-scene="yachts">
+        <div class="y-detail-wrap">
+          <div class="y-page">
+            <img class="layer" src={src['y-detail']} alt="" />
+            <img class="y-calendar" src={src['y-calendar']} alt="" />
+          </div>
+        </div>
+        <div class="y-search">
+          <img class="layer" src={src['y-base']} alt="" />
+          <div class="y-pins">
+            {pins.map(([kind, left, top]) => <img class="y-pin" src={src[`y-pin-${kind}`]} alt="" style={`left:${left}px; top:${top}px`} />)}
+          </div>
+          {
+            yCards.map(([left, top], i) => (
+              <img class="y-card" src={src[`y-card-${i + 1}`]} alt="" style={`left:${left}px; top:${top}px`} />
+            ))
+          }
+        </div>
+        <div class="y-morph"></div>
+      </div>
+
+      <!-- Scene D · Propeller · Dashboard -->
+      <div class="scene" data-scene="propeller">
+        <img class="layer" src={src['p-base']} alt="" />
+        {
+          ticks.map(([left, top, width, height]) => (
+            <div class="p-tick" style={`left:${left}px; top:${top}px; width:${width}px; height:${height}px`}>
+              <div style={`background-position:-${left}px -${top}px`} />
+            </div>
+          ))
+        }
+        <!-- Revenue chart revealed left → right -->
+        <div class="p-chart"></div>
+        <img class="p-picker" src={src['p-datepicker']} alt="" />
+      </div>
+
+      <svg class="cursor" viewBox="0 0 24 24" width="30" height="30">
+        <path
+          d="M4 2.5l15 8.2-6.6 1.6 3.9 7.3-2.6 1.4-3.9-7.3L5 18.4z"
+          fill="#111"
+          stroke="#fff"
+          stroke-width="1.4"
+          stroke-linejoin="round"></path>
+      </svg>
+      <div class="click-ring"></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initShowreel } from '../scripts/showreel';
+
+  const reel = document.querySelector<HTMLElement>('.reel');
+  if (reel) initShowreel(reel);
+</script>
+
+<style>
+  /* Tile: 1408×720 */
+  .reel {
+    position: relative;
+    aspect-ratio: 1408 / 720;
+    border-radius: var(--r, 8px);
+    overflow: hidden;
+    background: #141414;
+    isolation: isolate;
+  }
+
+  .reel__glow {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 900ms ease;
+    z-index: -1;
+  }
+  .reel__glow.is-on {
+    opacity: 1;
+  }
+  .reel__glow--artchain {
+    background:
+      radial-gradient(60% 75% at 85% 105%, rgba(255, 106, 26, 0.95), rgba(194, 38, 12, 0.5) 40%, transparent 72%),
+      radial-gradient(90% 90% at 8% -8%, rgba(255, 106, 26, 0.28), transparent 60%);
+  }
+  .reel__glow--disio {
+    background:
+      radial-gradient(60% 75% at 12% 105%, rgba(47, 211, 176, 0.9), rgba(11, 110, 99, 0.5) 40%, transparent 72%),
+      radial-gradient(90% 90% at 92% -8%, rgba(47, 211, 176, 0.25), transparent 60%);
+  }
+  .reel__glow--yachts {
+    background:
+      radial-gradient(60% 75% at 85% 105%, rgba(74, 112, 255, 0.9), rgba(28, 44, 140, 0.55) 40%, transparent 72%),
+      radial-gradient(90% 90% at 8% -8%, rgba(74, 112, 255, 0.25), transparent 60%);
+  }
+  .reel__glow--propeller {
+    background:
+      radial-gradient(60% 75% at 15% 105%, rgba(96, 140, 255, 0.85), rgba(40, 70, 190, 0.45) 40%, transparent 72%),
+      radial-gradient(90% 90% at 92% -8%, rgba(130, 170, 255, 0.3), transparent 60%);
+  }
+
+  /* Screen: 922×576 inside the tile (16:10, 80% of the tile height) */
+  .reel__screen {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--screen-w, calc(921.6 / 1408 * 100%));
+    aspect-ratio: 16 / 10;
+    transform: translate(-50%, -50%);
+    border-radius: var(--r, 8px);
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 24px 56px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Stage is authored at 1440×900 and fitted to the screen with `zoom` (see scripts/showreel.ts) */
+  .stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1440px;
+    height: 900px;
+    background: #fff;
+  }
+  .stage img {
+    max-width: none;
+  }
+
+  .scene {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background: #fff;
+  }
+  .scene.is-on {
+    opacity: 1;
+  }
+
+  .layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1440px;
+    display: block;
+  }
+
+  .chrome--grid {
+    opacity: 0;
+  }
+
+  .row {
+    position: absolute;
+    left: 80px;
+    width: 1280px;
+    height: 160px;
+    opacity: 0;
+  }
+  .row > img {
+    display: block;
+    width: 1280px;
+  }
+
+  .row__hover {
+    position: absolute;
+    inset: 0;
+    background: rgba(20, 20, 20, 0.035);
+    opacity: 0;
+  }
+
+  .badge-swap {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    background: #fff;
+    border-radius: 14px;
+    opacity: 0;
+  }
+  .badge-swap img {
+    display: block;
+    width: 89px;
+    height: 20px;
+  }
+
+  .card {
+    position: absolute;
+    top: 320px;
+    width: 290px;
+    height: 372px;
+    opacity: 0;
+    transform-origin: 0 0;
+  }
+  .card > img {
+    display: block;
+    width: 290px;
+    height: 372px;
+  }
+
+  .d-generating,
+  .d-generated {
+    opacity: 0;
+  }
+
+  .shimmer {
+    position: absolute;
+    left: 216px;
+    top: 384px;
+    width: 1008px;
+    height: 120px;
+    border-radius: 8px;
+    opacity: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      rgba(47, 211, 176, 0.18) 45%,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(47, 211, 176, 0.18) 55%,
+      transparent 80%
+    );
+    background-size: 250% 100%;
+  }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(16, 24, 32, 0.45);
+    opacity: 0;
+  }
+
+  .modal {
+    position: absolute;
+    left: 107px;
+    top: 146px;
+    width: 1226px;
+    opacity: 0;
+  }
+
+  .y-pin {
+    position: absolute;
+    width: 60px;
+    height: 68px;
+    opacity: 0;
+  }
+
+  .y-card {
+    position: absolute;
+    width: 363px;
+    opacity: 0;
+  }
+
+  .y-search {
+    position: absolute;
+    inset: 0;
+    background: #fff;
+  }
+
+  .y-detail-wrap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  .y-page {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1440px;
+    height: 1248px;
+  }
+
+  /* Availability calendar popover (node at 640,692 plus its 32/24px shadow) */
+  .y-calendar {
+    position: absolute;
+    left: 608px;
+    top: 668px;
+    width: 704px;
+    height: 582px;
+    opacity: 0;
+  }
+
+  /* Main gallery photo on the detail page (554×364 at 160,144), cropped from the page layer */
+  .y-morph {
+    position: absolute;
+    left: 160px;
+    top: 144px;
+    width: 554px;
+    height: 364px;
+    border-radius: 8px;
+    background: var(--y-detail) -160px -144px / 1440px 1248px no-repeat;
+    transform-origin: 0 0;
+    opacity: 0;
+  }
+
+  .p-tick {
+    position: absolute;
+    overflow: hidden;
+  }
+  .p-tick > div {
+    position: absolute;
+    inset: 0;
+    background-image: var(--p-full);
+    background-repeat: no-repeat;
+    background-size: 1440px 900px;
+    transform: translateY(100%);
+  }
+
+  .p-chart {
+    position: absolute;
+    left: 60px;
+    top: 600px;
+    width: 1340px;
+    height: 232px;
+    background: var(--p-full) -60px -600px / 1440px 900px no-repeat;
+    clip-path: inset(0 100% 0 0);
+  }
+
+  /* Date range picker (node at 708,514 plus its shadow) */
+  .p-picker {
+    position: absolute;
+    left: 692px;
+    top: 501px;
+    width: 352px;
+    height: 394px;
+    opacity: 0;
+    transform-origin: 243px 0;
+  }
+
+  .cursor {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    opacity: 0;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.25));
+    z-index: 10;
+    pointer-events: none;
+  }
+
+  .click-ring {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    margin: -22px 0 0 -22px;
+    border-radius: 50%;
+    border: 2px solid rgba(20, 20, 20, 0.35);
+    opacity: 0;
+    z-index: 9;
+    pointer-events: none;
+  }
+
+  /* Phones: a taller tile and a wider screen so the UI stays readable. */
+  @media (max-width: 720px) {
+    .reel {
+      aspect-ratio: 4 / 3;
+      --screen-w: 88%;
+    }
+  }
+</style>

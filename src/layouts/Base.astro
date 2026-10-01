@@ -1,0 +1,38 @@
+---
+import '../styles/global.css';
+import { site } from '../site';
+import Loader from '../components/Loader.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = `${site.name} — ${site.role}`, description = site.description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <!-- Intro loader: first page of the session only; decided before paint to avoid a flash -->
+    <script is:inline>
+      try {
+        if (!sessionStorage.getItem('loader-seen')) {
+          sessionStorage.setItem('loader-seen', '1');
+          document.documentElement.classList.add('show-loader');
+        }
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <Loader />
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,119 @@
+---
+// One decision / shipped feature: split head (label + H3 left, explanation right) and its
+// screens below — one wide tile, or a pair of squares.
+import type { ImageMetadata } from 'astro';
+import ScreenTile from './ScreenTile.astro';
+import type { Accent, Glow } from './glow';
+
+type Screen = { image: ImageMetadata; alt: string; caption: string; glow: Glow };
+
+interface Props {
+  label: string;
+  title: string;
+  text: string;
+  screens: [Screen] | [Screen, Screen];
+  accent?: Accent;
+  /** 'top' when the explanation runs longer than the title block */
+  align?: 'bottom' | 'top';
+}
+
+const { label, title, text, screens, accent = 'teal', align = 'bottom' } = Astro.props;
+const format = screens.length === 1 ? 'wide' : 'square';
+---
+
+<article class="feature">
+  <div class:list={['feature__head', { 'feature__head--top': align === 'top' }]}>
+    <div class="feature__title">
+      <p class="eyebrow">{label}</p>
+      <h3>{title}</h3>
+    </div>
+    <p class="feature__text">{text}</p>
+  </div>
+  <div class:list={['feature__screens', `feature__screens--${format}`]}>
+    {screens.map((screen) => <ScreenTile {...screen} accent={accent} format={format} />)}
+  </div>
+</article>
+
+<style>
+  .feature {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding-top: 120px;
+  }
+
+  .feature__head {
+    display: flex;
+    align-items: flex-end;
+    gap: 64px;
+    padding-inline: 40px;
+  }
+  .feature__head--top {
+    align-items: flex-start;
+  }
+  .feature__title {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: none;
+    width: 580px;
+  }
+  .feature__title h3 {
+    font-weight: 500;
+    font-size: clamp(28px, 2.5vw, 36px);
+    line-height: 1.2222;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+  .feature__text {
+    flex: 1;
+    font-size: 18px;
+    line-height: 28px;
+    color: var(--color-text-secondary);
+  }
+
+  .feature__screens--square {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  /* Desktop: the head sits on the same two columns as the tile pair below — title 40px in from
+     the left tile, explanation 40px in from the right tile. */
+  @media (min-width: 1101px) {
+    .feature__head {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      padding-inline: 0;
+    }
+    .feature__title,
+    .feature__text {
+      width: auto;
+      padding-inline: 40px;
+    }
+  }
+
+  @media (max-width: 1100px) {
+    .feature__head {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .feature__title {
+      width: auto;
+    }
+  }
+  @media (max-width: 720px) {
+    .feature {
+      padding-top: 80px;
+      gap: 24px;
+    }
+    .feature__head {
+      padding-inline: 0;
+    }
+    .feature__screens--square {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

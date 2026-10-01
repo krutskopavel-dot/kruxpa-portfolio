@@ -1,0 +1,159 @@
+---
+// Tile with one product screen and a mono caption in the corner.
+// wide:   1408×816 dark tile, screen 1040×650
+// square: 700×700 dark tile, screen 560×350
+// phone:  700×700 dark tile, phone screen 280 wide at top 80, running off the bottom edge
+// board:  1408×816 white tile filled edge to edge with the image (e.g. component sheets)
+// Screens keep their own aspect, top-aligned on white: taller shots crop at the bottom,
+// shorter ones leave white below — the same as the Figma frames.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { glow as glowFor, type Accent, type Glow } from './glow';
+
+interface Props {
+  image: ImageMetadata;
+  alt: string;
+  caption?: string;
+  glow?: Glow;
+  accent?: Accent;
+  format?: 'wide' | 'square' | 'phone' | 'board';
+  eager?: boolean;
+}
+
+const { image, alt, caption, glow, accent = 'teal', format = 'wide', eager = false } = Astro.props;
+
+const layout = {
+  wide: { widths: [1040, 2080], sizes: '(min-width: 1440px) 1040px, 74vw' },
+  square: { widths: [560, 1120], sizes: '(min-width: 1440px) 560px, (min-width: 900px) 40vw, 80vw' },
+  phone: { widths: [280, 560], sizes: '(min-width: 1440px) 280px, (min-width: 900px) 20vw, 40vw' },
+  board: { widths: [1408, 2498], sizes: '(min-width: 1440px) 1408px, 100vw' },
+}[format];
+
+const background = format === 'board' || !glow ? undefined : `background-image: ${glowFor(glow, accent)}`;
+---
+
+<figure class:list={['tile', `tile--${format}`]} style={background}>
+  {caption && <figcaption class="eyebrow tile__caption">{caption}</figcaption>}
+  <div class="tile__screen">
+    <Image
+      src={image}
+      alt={alt}
+      widths={layout.widths}
+      quality={92}
+      sizes={layout.sizes}
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : 'auto'}
+    />
+  </div>
+</figure>
+
+<style>
+  .tile {
+    position: relative;
+    display: grid;
+    place-items: center;
+    margin: 0;
+    border-radius: var(--radius-sm);
+    background-color: #141414;
+    overflow: hidden;
+  }
+  .tile--wide,
+  .tile--board {
+    aspect-ratio: 1408 / 816;
+  }
+  .tile--square,
+  .tile--phone {
+    aspect-ratio: 1;
+  }
+
+  /* 40px in, on the same vertical line as the section headings above the tiles */
+  .tile__caption {
+    position: absolute;
+    z-index: 1;
+    left: 40px;
+    top: 26px;
+    color: rgba(255, 255, 255, 0.6);
+  }
+
+  .tile__screen {
+    aspect-ratio: 16 / 10;
+    border-radius: var(--radius-sm);
+    background: #fff;
+    box-shadow: 0 24px 56px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+  }
+  .tile--wide .tile__screen {
+    width: calc(1040 / 1408 * 100%);
+  }
+  .tile--square .tile__screen {
+    width: 80%;
+  }
+  .tile__screen :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Phone: 280×788 at (210, 80) in the 700 tile, clipped by the tile's bottom edge */
+  .tile--phone {
+    place-items: start center;
+  }
+  .tile--phone .tile__screen {
+    width: 40%;
+    aspect-ratio: 280 / 788;
+    margin-top: calc(80 / 700 * 100%);
+    border-radius: 24px;
+  }
+
+  /* Board: white tile, image covers it; caption sits on a white pill */
+  .tile--board {
+    border: 1px solid var(--color-border);
+    background: #fff;
+  }
+  .tile--board .tile__screen {
+    position: absolute;
+    inset: -1px;
+    width: auto;
+    aspect-ratio: auto;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .tile--board .tile__screen :global(img) {
+    height: 100%;
+    object-fit: cover;
+  }
+  /* Pill: tile border 1 + 26 + pill border 1 + padding 12 puts the text on the same 40px line */
+  .tile--board .tile__caption {
+    left: 26px;
+    top: 23px;
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 720px) {
+    .tile__caption {
+      left: 16px;
+      top: 14px;
+      font-size: 10px;
+    }
+    .tile--board .tile__caption {
+      left: 12px;
+      top: 12px;
+      padding: 6px 8px;
+    }
+    .tile--wide {
+      aspect-ratio: 4 / 3;
+    }
+    .tile--wide .tile__screen {
+      width: 88%;
+    }
+    .tile--square .tile__screen {
+      width: 86%;
+    }
+    .tile--phone .tile__screen {
+      width: 56%;
+    }
+  }
+</style>

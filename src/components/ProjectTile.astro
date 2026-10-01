@@ -1,0 +1,166 @@
+---
+// Homepage case tile. On hover a frosted-glass card (after oem.care) floats in over the screenshot:
+// logo, mono kicker, title, one-line summary and a "Read case +" pill.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  href: string;
+  image: ImageMetadata;
+  alt: string;
+  logo: ImageMetadata;
+  kicker: string;
+  title: string;
+  summary: string;
+}
+
+const { href, image, alt, logo, kicker, title, summary } = Astro.props;
+---
+
+<a class="tile" href={href}>
+  <Image src={image} alt={alt} widths={[700, 1400]} quality={92} sizes="(min-width: 1440px) 700px, (min-width: 900px) 50vw, 100vw" />
+  <div class="glass">
+    <div class="glass__top">
+      <div class="glass__heading">
+        <h3 class="glass__title">{title}</h3>
+        <span class="glass__kicker">{kicker}</span>
+      </div>
+      <span class="glass__logo" aria-hidden="true">
+        <img src={logo.src} width={logo.width} height={logo.height} alt="" />
+      </span>
+    </div>
+    <p class="glass__summary">{summary}</p>
+    <span class="glass__cta">Read case</span>
+  </div>
+</a>
+
+<style>
+  .tile {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: #141414;
+  }
+  .tile > :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 700ms var(--ease-out);
+  }
+
+  /* Frosted card: translucent warm-grey glass that picks up the colours behind it */
+  .glass {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 340px;
+    padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 32px;
+    background: rgba(40, 37, 34, 0.56);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    backdrop-filter: blur(24px) saturate(1.4);
+    color: #fff;
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+    transition:
+      opacity 300ms ease,
+      transform 450ms var(--ease-out);
+  }
+
+  .glass__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .glass__heading {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .glass__title {
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: -0.01em;
+  }
+  .glass__kicker {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  .glass__logo {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: #fff;
+  }
+  .glass__logo img {
+    width: 26px;
+    height: auto;
+  }
+
+  .glass__summary {
+    font-size: 14px;
+    line-height: 20px;
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  /* Same button as the rest of the site (white "Download CV" style) */
+  .glass__cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+    height: 44px;
+    margin-top: 8px;
+    padding: 0 24px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--color-ink);
+    transition:
+      transform 200ms var(--ease-out),
+      box-shadow 200ms ease;
+  }
+
+  .tile:hover .glass,
+  .tile:focus-visible .glass {
+    opacity: 1;
+    transform: none;
+  }
+  .tile:hover > :global(img) {
+    transform: scale(1.02);
+  }
+  .tile:hover .glass__cta {
+    transform: translateY(-2px);
+    box-shadow:
+      0 4px 10px rgba(0, 0, 0, 0.12),
+      var(--shadow-sm);
+  }
+
+  /* No hover on touch screens: keep the card visible. */
+  @media (hover: none) {
+    .glass {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Showreel prototype</title>
+  <link rel="stylesheet" href="showreel.css">
+</head>
+<body>
+  <main class="page">
+    <section class="reel" aria-label="Showreel: Artchain inventory, Yachtswaps map search, Propeller dashboard and DISio scope versions">
+      <div class="reel__glow reel__glow--artchain" data-glow="artchain"></div>
+      <div class="reel__glow reel__glow--disio" data-glow="disio"></div>
+      <div class="reel__glow reel__glow--yachts" data-glow="yachts"></div>
+      <div class="reel__glow reel__glow--propeller" data-glow="propeller"></div>
+
+      <div class="reel__screen">
+        <div class="stage" aria-hidden="true">
+
+          <!-- Scene A · Artchain · Inventory -->
+          <div class="scene" data-scene="artchain">
+            <img class="layer chrome chrome--table" src="assets/a-chrome-table.png" alt="">
+            <img class="layer chrome chrome--grid" src="assets/a-chrome-grid.png" alt="">
+
+            <div class="row" style="top:268px"><img src="assets/a-row-1.png" alt=""></div>
+            <div class="row" style="top:428px"><img src="assets/a-row-2.png" alt=""></div>
+            <div class="row row--target" style="top:588px">
+              <img src="assets/a-row-3.png" alt="">
+              <div class="row__hover"></div>
+              <div class="badge-swap" style="left:1070px; top:66px; width:97px; height:28px">
+                <img src="assets/a-badge-approved.png" alt="">
+              </div>
+            </div>
+            <div class="row" style="top:748px"><img src="assets/a-row-4.png" alt=""></div>
+
+            <div class="card" style="left:80px"><img src="assets/a-card-1.png" alt=""></div>
+            <div class="card" style="left:410px"><img src="assets/a-card-2.png" alt=""></div>
+            <div class="card" style="left:740px">
+              <img src="assets/a-card-3.png" alt="">
+              <div class="badge-swap badge-swap--card" style="left:22px; top:22px; width:98px; height:28px">
+                <img src="assets/a-badge-approved.png" alt="">
+              </div>
+            </div>
+            <div class="card" style="left:1070px"><img src="assets/a-card-4.png" alt=""></div>
+          </div>
+
+          <!-- Scene B · DISio · Scope versions -->
+          <div class="scene" data-scene="disio">
+            <img class="layer d-list" src="assets/d-list.png" alt="">
+            <img class="layer d-generating" src="assets/d-generating.png" alt="">
+            <div class="shimmer"></div>
+            <img class="layer d-generated" src="assets/d-generated.png" alt="">
+            <div class="overlay"></div>
+            <img class="modal" src="assets/d-compare-modal.png" alt="">
+          </div>
+
+          <!-- Scene C · Yachtswaps · Search on the map -->
+          <div class="scene" data-scene="yachts">
+            <div class="y-detail-wrap">
+              <div class="y-page">
+                <img class="layer" src="assets/y-detail.png" alt="">
+                <img class="y-calendar" src="assets/y-calendar.png" alt="">
+              </div>
+            </div>
+            <div class="y-search">
+            <img class="layer" src="assets/y-base.png" alt="">
+            <div class="y-pins">
+              <img class="y-pin" src="assets/y-pin-a.png" alt="" style="left:889px; top:689px">
+              <img class="y-pin" src="assets/y-pin-a.png" alt="" style="left:934px; top:667px">
+              <img class="y-pin" src="assets/y-pin-a.png" alt="" style="left:875px; top:613px">
+              <img class="y-pin" src="assets/y-pin-a.png" alt="" style="left:978px; top:553px">
+              <img class="y-pin" src="assets/y-pin-a.png" alt="" style="left:934px; top:493px">
+              <img class="y-pin" src="assets/y-pin-a.png" alt="" style="left:983px; top:405px">
+              <img class="y-pin" src="assets/y-pin-c.png" alt="" style="left:1030px; top:347px">
+              <img class="y-pin" src="assets/y-pin-a.png" alt="" style="left:1208px; top:400px">
+              <img class="y-pin" src="assets/y-pin-c.png" alt="" style="left:1241px; top:360px">
+              <img class="y-pin" src="assets/y-pin-a.png" alt="" style="left:1290px; top:338px">
+            </div>
+            <img class="y-popup" src="assets/y-popup.png" alt="">
+            <img class="y-card" src="assets/y-card-1.png" alt="" style="left:23px; top:231px">
+            <img class="y-card" src="assets/y-card-2.png" alt="" style="left:403px; top:231px">
+            <img class="y-card" src="assets/y-card-3.png" alt="" style="left:23px; top:599px">
+            <img class="y-card" src="assets/y-card-4.png" alt="" style="left:403px; top:599px">
+            </div>
+            <div class="y-morph"></div>
+          </div>
+
+          <!-- Scene D · Propeller · Dashboard -->
+          <div class="scene" data-scene="propeller">
+            <img class="layer" src="assets/p-base.png" alt="">
+            <!-- KPI numbers roll up inside their own slots (cropped from the full layer) -->
+            <div class="p-tick" style="left:44px; top:342px; width:246px; height:64px"><div></div></div>
+            <div class="p-tick" style="left:507px; top:356px; width:28px; height:50px"><div></div></div>
+            <div class="p-tick" style="left:809px; top:356px; width:160px; height:50px"><div></div></div>
+            <div class="p-tick" style="left:1110px; top:356px; width:28px; height:50px"><div></div></div>
+            <div class="p-tick" style="left:1193px; top:356px; width:28px; height:50px"><div></div></div>
+            <!-- Revenue chart revealed left → right -->
+            <div class="p-chart"></div>
+            <img class="p-picker" src="assets/p-datepicker.png" alt="">
+          </div>
+
+          <svg class="cursor" viewBox="0 0 24 24" width="30" height="30">
+            <path d="M4 2.5l15 8.2-6.6 1.6 3.9 7.3-2.6 1.4-3.9-7.3L5 18.4z" fill="#111" stroke="#fff" stroke-width="1.4" stroke-linejoin="round"/>
+          </svg>
+          <div class="click-ring"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="showreel.js"></script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+---
+const skills = [
+  { title: 'Complex UX', text: 'Designing clear flows for data-heavy, multi-step, and enterprise products.' },
+  { title: 'Product Systems', text: 'Structuring scalable SaaS, Web3 and AI-enabled product experiences.' },
+  { title: 'Design Systems', text: 'Building reusable UI patterns, components, and visual foundations.' },
+  {
+    title: 'AI Product Design',
+    text: 'Designing AI-assisted workflows, chat-based interfaces, automation logic, and human-in-the-loop experiences.',
+  },
+  {
+    title: 'AI-assisted Frontend',
+    text: 'Building UI with Claude Code, Codex and VS Code — refining frontend and implementing design in live products.',
+  },
+  { title: 'Visual Craft', text: 'Creating polished, minimal interfaces with strong hierarchy and attention to detail.' },
+];
+---
+
+<section class="skills" aria-labelledby="skills-title">
+  <div class="skills__head">
+    <h2 class="eyebrow" id="skills-title">What I do</h2>
+    <p class="skills__statement">
+      I’m strongest at designing complex products where users need to make decisions, manage data, collaborate, or
+      complete multi-step workflows.
+    </p>
+  </div>
+
+  <ol class="sheet">
+    {
+      skills.map((skill, i) => (
+        <li class="cell">
+          <span class="eyebrow">{String(i + 1).padStart(2, '0')}</span>
+          <h3 class="cell__title">{skill.title}</h3>
+          <p class="cell__text">{skill.text}</p>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .skills {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+    padding: var(--section-gap) var(--content-inset) 0;
+  }
+
+  .skills__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 920px;
+    text-align: center;
+  }
+  .skills__statement {
+    font-weight: 500;
+    font-size: clamp(28px, 2.778vw, 40px);
+    line-height: 1.2;
+    color: var(--color-text);
+    text-wrap: balance;
+  }
+
+  /* 3×2 table: 1px lines between cells come from the sheet background showing through the gaps. */
+  .sheet {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-border);
+    overflow: hidden;
+  }
+
+  .cell {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 40px;
+    background: var(--color-surface);
+  }
+  .cell .eyebrow {
+    margin-bottom: 16px;
+  }
+  .cell__title {
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 32px;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+  .cell__text {
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 1024px) {
+    .sheet {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .skills {
+      gap: 40px;
+    }
+    .sheet {
+      grid-template-columns: 1fr;
+    }
+    .cell {
+      padding: 28px 24px;
+    }
+  }
+</style>

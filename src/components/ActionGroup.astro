@@ -1,0 +1,231 @@
+---
+// Contact / CV / case-study shortcuts.
+// full:    "Contact Me" and "Download CV" text buttons + DISio and Artchain logo buttons (hero, CTA)
+// compact: the same four as 52px icon buttons (floating dock)
+// Each text button holds both its label and its icon, so toggling `.actions--compact` animates
+// one state into the other: the button narrows to 52px while the label fades into the icon.
+import chatIcon from '../assets/icons/chat.svg';
+import badgeIcon from '../assets/icons/id-badge.svg';
+import disioLogo from '../assets/icons/logo-disio.svg';
+import artchainLogo from '../assets/icons/logo-artchain.svg';
+import { site } from '../site';
+
+interface Props {
+  variant?: 'full' | 'compact';
+  /** Hook for scripts, e.g. the dock watching the hero group */
+  id?: string;
+}
+
+const { variant = 'full', id } = Astro.props;
+
+const textButtons = [
+  { key: 'contact', label: 'Contact Me', href: site.contactUrl, icon: chatIcon, primary: true, download: false, external: true },
+  { key: 'cv', label: 'Download CV', href: site.cvUrl, icon: badgeIcon, primary: false, download: true, external: false },
+];
+
+const cases = [
+  { key: 'disio', tip: 'DISio', label: 'DISio case study', href: '/work/disio', logo: disioLogo },
+  { key: 'artchain', tip: 'Artchain', label: 'Artchain case study', href: '/work/artchain', logo: artchainLogo },
+];
+---
+
+<div class:list={['actions', { 'actions--compact': variant === 'compact' }]} data-actions={id}>
+  {
+    textButtons.map((b) => (
+      <a
+        class:list={['btn', 'btn--text', `btn--${b.key}`, { 'btn--primary': b.primary }]}
+        href={b.href}
+        download={b.download || undefined}
+        target={b.external ? '_blank' : undefined}
+        rel={b.external ? 'noopener noreferrer' : undefined}
+        data-tip={b.label}
+      >
+        <span class="btn__clip">
+          <span class="btn__label">{b.label}</span>
+          <img class="btn__icon" src={b.icon.src} width="24" height="24" alt="" />
+        </span>
+      </a>
+    ))
+  }
+  {
+    cases.map((c) => (
+      <a class={`btn btn--logo btn--${c.key}`} href={c.href} aria-label={c.label} data-tip={c.tip}>
+        <span class="btn__clip">
+          <img src={c.logo.src} width={c.logo.width} height={c.logo.height} alt="" />
+        </span>
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  .actions {
+    --morph: 450ms cubic-bezier(0.65, 0, 0.35, 1);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    border-radius: var(--radius-md);
+    background: var(--color-ghost);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 0.5px 1px rgba(0, 0, 0, 0.12);
+  }
+
+  .btn {
+    position: relative;
+    isolation: isolate;
+    display: block;
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    color: var(--color-ink);
+    white-space: nowrap;
+    transition:
+      width var(--morph),
+      transform 200ms var(--ease-out),
+      box-shadow 200ms ease,
+      background-color 200ms ease;
+  }
+  /* Lift a little on hover — stays inside the group's 8px padding. */
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 4px 10px rgba(0, 0, 0, 0.08),
+      var(--shadow-sm);
+  }
+  .btn:active {
+    transform: translateY(0) scale(0.97);
+  }
+
+  .btn--primary {
+    background: var(--color-ink);
+    color: var(--color-ink-foreground);
+  }
+  .btn--primary:hover {
+    background: #2a2a2a;
+  }
+
+  /* Content layer clips the label while the button narrows (the button itself doesn't clip,
+     so its tooltip can sit above it). One cell exactly as wide as the button: a label wider
+     than 52px overflows evenly on both sides instead of stretching the cell off-centre. */
+  .btn__clip {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    place-items: center;
+    border-radius: inherit;
+    overflow: hidden;
+  }
+
+  /* Text buttons: label and icon stacked in one cell, crossfading between states. */
+  .btn--contact {
+    width: 139px;
+  }
+  .btn--cv {
+    width: 151px;
+  }
+  .btn__label,
+  .btn__icon {
+    grid-area: 1 / 1;
+    transition: opacity 250ms ease;
+  }
+  .btn__icon {
+    opacity: 0;
+  }
+
+  .actions--compact .btn--text {
+    width: 52px;
+  }
+  .actions--compact .btn__label {
+    opacity: 0;
+  }
+  .actions--compact .btn__icon {
+    opacity: 1;
+    transition-delay: 150ms;
+  }
+
+  .btn img {
+    display: block;
+    width: 24px;
+    height: auto;
+  }
+  /* The DISio mark carries a drop shadow that overhangs its 24px box (Figma: -2.5% top). */
+  .btn--disio img {
+    margin-top: 1.5px;
+  }
+
+  /* Compact DISio button has a faint teal wash from the top (Figma 266:64165). */
+  .btn--disio::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(to top, #f5f5f5 78%, #cce7e5 100%);
+    opacity: 0;
+    transition: opacity var(--morph);
+  }
+  .actions--compact .btn--disio::before {
+    opacity: 1;
+  }
+
+  /* Compact panel: the button's name in a small tooltip above it on hover / keyboard focus. */
+  .actions--compact .btn::after {
+    content: attr(data-tip);
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 16px);
+    padding: 6px 10px;
+    border-radius: 6px;
+    background: var(--color-ink);
+    color: var(--color-ink-foreground);
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, 4px);
+    transition:
+      opacity 150ms ease,
+      transform 200ms var(--ease-out);
+  }
+  .actions--compact .btn:hover::after,
+  .actions--compact .btn:focus-visible::after {
+    opacity: 1;
+    transform: translate(-50%, 0);
+    transition-delay: 80ms;
+  }
+
+  @media (max-width: 480px) {
+    .actions:not(.actions--compact) {
+      gap: 4px;
+      padding: 4px;
+    }
+    .actions:not(.actions--compact) .btn {
+      width: 48px;
+      height: 48px;
+    }
+    .actions:not(.actions--compact) .btn--contact {
+      width: 118px;
+    }
+    .actions:not(.actions--compact) .btn--cv {
+      width: 128px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn:hover {
+      transform: none;
+    }
+  }
+</style>

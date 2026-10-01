@@ -1,0 +1,62 @@
+---
+// End of a case study: "Next case study →" link, then the site-wide link footer.
+import arrowRight from '../../assets/cases/arrow-right.svg';
+import Footer from '../Footer.astro';
+
+interface Props {
+  next: { title: string; href: string };
+}
+
+const { next } = Astro.props;
+---
+
+<section class="next-case" aria-label="Next case study">
+  <a class="next" href={next.href}>
+    <span class="eyebrow">Next case study</span>
+    <span class="next__title">
+      {next.title}
+      <img src={arrowRight.src} width="48" height="48" alt="" />
+    </span>
+  </a>
+</section>
+<Footer />
+
+<style>
+  /* Same 56px edges as the footer columns below */
+  .next-case {
+    padding: 72px var(--content-inset);
+  }
+
+  .next {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .next__title {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-weight: 700;
+    font-size: clamp(44px, 4.445vw, 64px);
+    line-height: 1.0625;
+    letter-spacing: -0.03em;
+    color: var(--color-text);
+  }
+  .next__title img {
+    transition: transform 300ms var(--ease-out);
+  }
+  .next:hover .next__title img {
+    transform: translateX(8px);
+  }
+
+  @media (max-width: 720px) {
+    .next-case {
+      padding: 56px 16px;
+    }
+    .next__title img {
+      width: 36px;
+      height: 36px;
+    }
+  }
+</style>
