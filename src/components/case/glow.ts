@@ -12,6 +12,8 @@ const palettes = {
   orange: { light: '255,106,26', mid: '225,72,19', deep: '194,38,12', dark: '109,31,18' },
   // Yachtswaps: mint into ocean blue
   ocean: { light: '77,217,173', mid: '45,150,166', deep: '13,84,158', dark: '12,45,85' },
+  // Propeller: brand violet into brand blue (#1B3DD4)
+  violet: { light: '139,108,255', mid: '86,84,240', deep: '27,61,212', dark: '22,30,112' },
 } satisfies Record<string, Palette>;
 
 export type Accent = keyof typeof palettes;

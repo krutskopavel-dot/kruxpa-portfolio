@@ -1,13 +1,16 @@
 ---
 // Contact / CV / case-study shortcuts.
-// full:    "Contact Me" and "Download CV" text buttons + DISio and Artchain logo buttons (hero, CTA)
-// compact: the same four as 52px icon buttons (floating dock)
+// full:    "Contact Me" and "Download CV" text buttons, a divider, then a logo button per case study
+//          (hero, CTA)
+// compact: the same as 52px icon buttons (floating dock)
 // Each text button holds both its label and its icon, so toggling `.actions--compact` animates
 // one state into the other: the button narrows to 52px while the label fades into the icon.
 import chatIcon from '../assets/icons/chat.svg';
 import badgeIcon from '../assets/icons/id-badge.svg';
 import disioLogo from '../assets/icons/logo-disio.svg';
 import artchainLogo from '../assets/icons/logo-artchain.svg';
+import propellerLogo from '../assets/icons/logo-propeller.svg';
+import yachtswapsLogo from '../assets/icons/logo-yachtswaps.svg';
 import { site } from '../site';
 
 interface Props {
@@ -23,9 +26,12 @@ const textButtons = [
   { key: 'cv', label: 'Download CV', href: site.cvUrl, icon: badgeIcon, primary: false, download: true, external: false },
 ];
 
+// `phoneHidden`: the phone dock only has room for the first two; the menu lists every case.
 const cases = [
   { key: 'disio', tip: 'DISio', label: 'DISio case study', href: '/work/disio', logo: disioLogo },
   { key: 'artchain', tip: 'Artchain', label: 'Artchain case study', href: '/work/artchain', logo: artchainLogo },
+  { key: 'propeller', tip: 'Propeller', label: 'Propeller case study', href: '/work/propeller', logo: propellerLogo, phoneHidden: true },
+  { key: 'yachtswaps', tip: 'Yachtswaps', label: 'Yachtswaps case study', href: '/work/yachtswaps', logo: yachtswapsLogo, phoneHidden: true },
 ];
 ---
 
@@ -47,9 +53,15 @@ const cases = [
       </a>
     ))
   }
+  <span class="actions__divider" aria-hidden="true"></span>
   {
     cases.map((c) => (
-      <a class={`btn btn--logo btn--${c.key}`} href={c.href} aria-label={c.label} data-tip={c.tip}>
+      <a
+        class:list={['btn', 'btn--logo', `btn--${c.key}`, { 'btn--phone-hidden': c.phoneHidden }]}
+        href={c.href}
+        aria-label={c.label}
+        data-tip={c.tip}
+      >
         <span class="btn__clip">
           <img src={c.logo.src} width={c.logo.width} height={c.logo.height} alt="" />
         </span>
@@ -159,6 +171,20 @@ const cases = [
     width: 24px;
     height: auto;
   }
+  /* Wordmark-shaped mark: wider so it reads at the same size as the others */
+  .btn--yachtswaps img {
+    width: 32px;
+  }
+
+  /* Separates Contact / CV from the case-study buttons */
+  .actions__divider {
+    flex: none;
+    width: 1px;
+    height: 32px;
+    margin-inline: 4px;
+    background: rgba(0, 0, 0, 0.24);
+  }
+
   /* The DISio mark carries a drop shadow that overhangs its 24px box (Figma: -2.5% top). */
   .btn--disio img {
     margin-top: 1.5px;
@@ -195,6 +221,12 @@ const cases = [
   /* Touch: a tap would leave the tooltip stuck on screen */
   @media (hover: none) {
     .actions--compact .btn::after {
+      display: none;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .btn--phone-hidden {
       display: none;
     }
   }

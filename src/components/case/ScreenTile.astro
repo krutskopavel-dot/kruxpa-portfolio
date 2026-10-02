@@ -28,12 +28,14 @@ interface Props {
 const { image, alt = '', caption, glow, accent = 'teal', format = 'wide', eager = false } = Astro.props;
 const screens: Screen[] = Astro.props.screens ?? (image ? [{ image, alt }] : []);
 
+// The page is fluid, so sizes are viewport-relative (1040 / 1440 = 72vw etc.) and the srcset
+// runs up to the 2880px sources for large 2× screens.
 const layout = {
-  wide: { widths: [1040, 2080], sizes: '(min-width: 1440px) 1040px, 74vw' },
-  square: { widths: [560, 1120], sizes: '(min-width: 1440px) 560px, (min-width: 900px) 40vw, 80vw' },
-  phone: { widths: [280, 560], sizes: '(min-width: 1440px) 280px, (min-width: 900px) 20vw, 40vw' },
-  phones: { widths: [300, 600], sizes: '(min-width: 1440px) 300px, (min-width: 720px) 21vw, 30vw' },
-  board: { widths: [1408, 2498], sizes: '(min-width: 1440px) 1408px, 100vw' },
+  wide: { widths: [1040, 2080, 2880], sizes: '(min-width: 721px) 72vw, 88vw' },
+  square: { widths: [560, 1120, 1680, 2240], sizes: '(min-width: 721px) 39vw, 86vw' },
+  phone: { widths: [280, 560, 840], sizes: '(min-width: 721px) 20vw, 56vw' },
+  phones: { widths: [300, 600, 900], sizes: '(min-width: 721px) 21vw, 29vw' },
+  board: { widths: [1408, 2816], sizes: '100vw' },
 }[format];
 
 const background = format === 'board' || !glow ? undefined : `background-image: ${glowFor(glow, accent)}`;
@@ -49,7 +51,7 @@ const background = format === 'board' || !glow ? undefined : `background-image: 
             src={screen.image}
             alt={screen.alt}
             widths={layout.widths}
-            quality={92}
+            quality="max"
             sizes={layout.sizes}
             loading={eager ? 'eager' : 'lazy'}
             fetchpriority={eager ? 'high' : 'auto'}

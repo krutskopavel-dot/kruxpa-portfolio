@@ -22,7 +22,15 @@ const backdrop = await getImage({ src: image, width: 160, format: 'webp' });
 <a class="tile" href={href}>
   <!-- Phones: blurred backdrop behind the card, which sits below the screenshot there -->
   <img class="tile__backdrop" src={backdrop.src} alt="" aria-hidden="true" loading="lazy" decoding="async" />
-  <Image src={image} alt={alt} widths={[700, 1400]} quality={92} sizes="(min-width: 1440px) 700px, (min-width: 900px) 50vw, 100vw" />
+  <!-- The grid is fluid: on wide screens a tile is ~1000px, so it needs up to 2000px at 2×.
+       quality="max" = near-lossless WebP (src/lib/image-service.ts) -->
+  <Image
+    src={image}
+    alt={alt}
+    widths={[700, 1400, 2000]}
+    quality="max"
+    sizes="(min-width: 900px) 50vw, 100vw"
+  />
   <div class="glass">
     <div class="glass__top">
       <div class="glass__heading">

@@ -4,8 +4,10 @@ import disio from '../assets/home/disio-cover.webp';
 import artchain from '../assets/home/artchain.png';
 import disioLogo from '../assets/icons/logo-disio.svg';
 import artchainLogo from '../assets/icons/logo-artchain.svg';
-import yachtswaps from '../assets/home/yachtswaps-cover.webp';
+import yachtswaps from '../assets/home/yachtswaps-cover.png';
 import yachtswapsLogo from '../assets/icons/logo-yachtswaps.svg';
+import propeller from '../assets/home/propeller-cover.png';
+import propellerLogo from '../assets/icons/logo-propeller.svg';
 
 const projects = [
   {
@@ -27,17 +29,25 @@ const projects = [
     summary: 'Designing trust into art management for museums and galleries',
   },
   {
+    href: '/work/propeller',
+    image: propeller,
+    alt: 'Propeller dashboard on a laptop against a dark-to-light gradient',
+    kicker: '03 — B2B SaaS · Operations',
+    title: 'Propeller',
+    logo: propellerLogo,
+    summary: 'One system for running a boat rental business',
+  },
+  {
     href: '/work/yachtswaps',
     image: yachtswaps,
     alt: 'Yachtswaps search on a phone lying in dark blue water',
-    kicker: '03 — Yacht swapping · B2C',
+    kicker: '04 — Yacht swapping · B2C',
     title: 'Yachtswaps',
     logo: yachtswapsLogo,
     summary: 'Designing trust between strangers swapping yachts',
   },
 ];
 
-const marquee = 'Other projects: coming soon';
 ---
 
 <section class="work" id="work" aria-labelledby="work-title">
@@ -45,20 +55,6 @@ const marquee = 'Other projects: coming soon';
 
   <div class="work__grid">
     {projects.map((project) => <ProjectTile {...project} />)}
-  </div>
-
-  <div class="marquee" role="note" aria-label={marquee}>
-    <div class="marquee__track" aria-hidden="true">
-      {
-        [0, 1].map(() => (
-          <div class="marquee__group">
-            {Array.from({ length: 8 }, () => (
-              <span>{marquee}</span>
-            ))}
-          </div>
-        ))
-      }
-    </div>
   </div>
 </section>
 
@@ -81,51 +77,9 @@ const marquee = 'Other projects: coming soon';
     gap: 8px;
   }
 
-  .marquee {
-    margin-top: 8px;
-    padding: 24px 0;
-    border-radius: 200px;
-    background: var(--color-ink);
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.12);
-    overflow: hidden;
-  }
-  /* Two identical groups; each is wider than any screen (~3200px), so shifting the track by
-     exactly one group (-50%) loops seamlessly. */
-  .marquee__track {
-    display: flex;
-    width: max-content;
-    animation: marquee 60s linear infinite;
-  }
-  .marquee__group {
-    display: flex;
-    flex: none;
-  }
-  .marquee__track span {
-    padding-right: 0.3em;
-    font-size: 24px;
-    line-height: 26px;
-    text-transform: uppercase;
-    color: #fff;
-    white-space: nowrap;
-  }
-  @keyframes marquee {
-    to {
-      transform: translateX(-50%);
-    }
-  }
-
   @media (max-width: 900px) {
     .work__grid {
       grid-template-columns: 1fr;
-    }
-  }
-  @media (max-width: 560px) {
-    .marquee {
-      padding: 16px 0;
-    }
-    .marquee__track span {
-      font-size: 18px;
-      line-height: 22px;
     }
   }
 </style>

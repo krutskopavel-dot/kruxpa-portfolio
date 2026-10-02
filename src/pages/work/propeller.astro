@@ -1,0 +1,383 @@
+---
+// Propeller case study — built on the Yachtswaps / Artchain template from the Figma materials:
+// screens 240:60776 (2× exports from the old case 287:36910), brand and mobile from 287:36910,
+// copy and confirmed outcomes from the draft 1:697.
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import SectionHead from '../../components/case/SectionHead.astro';
+import ScreenTile from '../../components/case/ScreenTile.astro';
+import Feature from '../../components/case/Feature.astro';
+import CaseFooter from '../../components/case/CaseFooter.astro';
+import ActionDock from '../../components/ActionDock.astro';
+import '../../styles/case.css';
+
+import dashboard from '../../assets/cases/propeller/dashboard.png';
+import boatsOverview from '../../assets/cases/propeller/boats-overview.png';
+import customers from '../../assets/cases/propeller/customers.png';
+import bookingsTable from '../../assets/cases/propeller/bookings-table.png';
+import bookingsCalendar from '../../assets/cases/propeller/bookings-calendar.png';
+import availabilityList from '../../assets/cases/propeller/availability-list.png';
+import addBooking from '../../assets/cases/propeller/add-booking.png';
+import bookingDetail from '../../assets/cases/propeller/booking-detail.png';
+import boatDetail from '../../assets/cases/propeller/boat-detail.png';
+import customerDetail from '../../assets/cases/propeller/customer-detail.png';
+import mobile from '../../assets/cases/propeller/mobile.png';
+import brand from '../../assets/cases/propeller/brand.png';
+
+const meta = [
+  { label: 'Role', value: 'Product Designer' },
+  { label: 'Scope', value: 'Redesign, brand, responsive web app, design system on MUI' },
+  { label: 'Timeline', value: 'Late 2024 – early 2025 · Iguana' },
+  { label: 'Status', value: 'Live · getonpropeller.com' },
+];
+
+const tldr = [
+  {
+    label: '01 — Problem',
+    text: 'Boat rental companies juggled bookings, availability, customers and payments across separate tools — overlapping bookings and manual reports were part of the job.',
+  },
+  {
+    label: '02 — My part',
+    text: 'Redesigned the previous product from research to handoff: information architecture, every screen, the brand and the design system.',
+  },
+  {
+    label: '03 — Outcome',
+    text: 'One configurable system that runs a rental company’s day — built to be resold to other businesses, and still live.',
+  },
+];
+
+const pains = [
+  { title: 'Tools everywhere', text: 'Calendars, customer lists, spreadsheets and payments lived in different places.' },
+  { title: 'Overlapping bookings', text: 'With no single view of availability, the same boat could be promised twice.' },
+  { title: 'Reports by hand', text: 'Revenue and payments had to be pulled together manually.' },
+];
+
+const roles = [
+  {
+    label: '01 — Runs the business',
+    title: 'Owner',
+    text: 'Watches revenue, the fleet and the team; sets prices and discounts.',
+  },
+  {
+    label: '02 — Sells the trips',
+    title: 'Sales agent',
+    text: 'Creates bookings, looks after customers and sends contracts.',
+  },
+  {
+    label: '03 — On the water',
+    title: 'Skipper & crew',
+    text: 'Are assigned to boats and trips, and see their own schedule.',
+  },
+];
+
+const tensions = [
+  [
+    'Every rental company works its own way.',
+    'To run their own process, not someone else’s.',
+    'Is configurable: locations, boats, prices and two booking modes.',
+  ],
+  [
+    'One boat, several trips a day.',
+    'To see what’s free before promising it.',
+    'Keeps availability apart from bookings, by day, time slot and location.',
+  ],
+  [
+    'Every booking carries money.',
+    'To know what’s paid and what’s still owed.',
+    'Puts price, discounts, fees, payments and balance on the booking itself.',
+  ],
+];
+
+const outcomes = [
+  {
+    title: 'Fewer booking conflicts',
+    text: 'A structured availability and reservation workflow reduced booking conflicts and manual errors.',
+  },
+  {
+    title: 'The whole day in one place',
+    text: 'Bookings, payments and reporting moved into one system, so daily operations got faster.',
+  },
+  {
+    title: 'Built to be resold',
+    text: 'Propeller was designed as a configurable SaaS product and reused across several rental companies.',
+  },
+  {
+    title: 'Clearer numbers',
+    text: 'Financial dashboards and reports gave owners more confidence in business decisions.',
+  },
+];
+---
+
+<Base
+  title="Propeller — One system for boat rental businesses · Pavel Krutsko"
+  description="A B2B platform where charter companies manage their fleet, availability, bookings, customers and payments — designed to be resold to other rental businesses."
+>
+  <Header />
+  <main class="case">
+    <!-- 01 — Hero -->
+    <section class="hero">
+      <div class="hero__head">
+        <div class="hero__intro">
+          <p class="eyebrow">Case study 03 — Propeller</p>
+          <h1>One system for running a boat rental business</h1>
+          <p class="hero__lead">
+            A B2B platform where charter companies manage their fleet, availability, bookings, customers and payments —
+            designed to be resold to other rental businesses.
+          </p>
+        </div>
+        <dl class="meta">
+          {
+            meta.map((row) => (
+              <div class="meta__row">
+                <dt class="eyebrow">{row.label}</dt>
+                <dd>{row.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+      <ScreenTile
+        image={dashboard}
+        alt="Propeller dashboard: revenue, bookings, average per booking and a revenue chart with a date picker"
+        glow="hero"
+        accent="violet"
+        eager
+      />
+    </section>
+
+    <!-- 02 — TL;DR -->
+    <section class="tldr" aria-label="Summary">
+      {
+        tldr.map((cell) => (
+          <div class="tldr__cell">
+            <p class="eyebrow">{cell.label}</p>
+            <p class="tldr__text">{cell.text}</p>
+          </div>
+        ))
+      }
+    </section>
+
+    <!-- 03 — Context -->
+    <section class="section">
+      <div class="text-block">
+        <SectionHead label="Context" title="A rental business runs on boats, slots and money — in too many tools." />
+        <ol class="columns">
+          {
+            pains.map((pain, i) => (
+              <li class="column column--ruled">
+                <span class="eyebrow">{String(i + 1).padStart(2, '0')}</span>
+                <h3 class="column__title">{pain.title}</h3>
+                <p class="column__text">{pain.text}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <ScreenTile
+        image={boatsOverview}
+        alt="Boats overview: the fleet as a table with status, owner, market, skipper, trips and revenue"
+        caption="Operator — boats overview"
+        glow="wideRight"
+        accent="violet"
+      />
+    </section>
+
+    <!-- 04 — Users -->
+    <section class="section">
+      <div class="text-block">
+        <SectionHead label="Users" title="One company, three kinds of work." />
+        <div class="sheet">
+          <div class="sheet__row">
+            {
+              roles.map((cell) => (
+                <div class="sheet__cell">
+                  <p class="eyebrow">{cell.label}</p>
+                  <h3 class="sheet__title">{cell.title}</h3>
+                  <p class="column__text">{cell.text}</p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+      <ScreenTile
+        image={customers}
+        alt="Customers overview with totals, filters and a table of customers with spend and bookings"
+        caption="Sales — customers overview"
+        glow="wideLeftInset"
+        accent="violet"
+      />
+    </section>
+
+    <!-- 05 — Core challenge -->
+    <section class="section">
+      <div class="challenge">
+        <SectionHead label="The core challenge" title="Flexible vs. simple." align="center" tone="dark" />
+        <table class="tensions">
+          <thead>
+            <tr>
+              <th scope="col">The business</th>
+              <th scope="col">Operators need</th>
+              <th scope="col">So the design…</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              tensions.map(([business, need, design]) => (
+                <tr>
+                  <td data-label="The business">{business}</td>
+                  <td data-label="Operators need">{need}</td>
+                  <td data-label="So the design…">{design}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 06 — Design decisions -->
+    <section class="section section--features">
+      <SectionHead label="Design decisions" title="Four decisions that kept a busy day simple." align="center" />
+      <Feature
+        label="Decision 01 / 04"
+        title="Two ways to see bookings"
+        text="Bookings Overview has a table mode for working through statuses and a calendar mode for seeing the month at a glance — the same data for two different workflows."
+        accent="violet"
+        screens={[
+          {
+            image: bookingsTable,
+            alt: 'Bookings overview as a table with statuses, boats, dates, prices and skippers',
+            caption: 'Bookings — table mode',
+            glow: 'squareEdge',
+          },
+          {
+            image: bookingsCalendar,
+            alt: 'Bookings overview as a month calendar with colour-coded booking statuses',
+            caption: 'Bookings — calendar mode',
+            glow: 'squareCorner',
+          },
+        ]}
+      />
+      <Feature
+        label="Decision 02 / 04"
+        title="Availability apart from bookings"
+        text="Operators check what’s free by day, time slot and location before they promise a trip — and book straight from the free slot."
+        accent="violet"
+        screens={[
+          {
+            image: availabilityList,
+            alt: 'Boat availability: a month picker and free boats grouped by time slot, each with a Book button',
+            caption: 'Calendar — available boats',
+            glow: 'wideRight',
+          },
+        ]}
+      />
+      <Feature
+        label="Decision 03 / 04"
+        title="One form for a new booking"
+        text="Add Booking walks through customer, notes and booking details. Picking an existing customer brings in their contacts, spend and class, so nothing is typed twice."
+        accent="violet"
+        screens={[
+          {
+            image: addBooking,
+            alt: 'Add booking form with a customer search and the selected customer’s details and spend',
+            caption: 'Sales — add booking',
+            glow: 'wideLeft',
+          },
+        ]}
+      />
+      <Feature
+        label="Decision 04 / 04"
+        title="The money lives on the booking"
+        text="Price, discount, extra fees, payments and balance sit on the booking itself, next to the actions that move it forward — send the contract, send the handoff, take a payment."
+        accent="violet"
+        screens={[
+          {
+            image: bookingDetail,
+            alt: 'Booking detail with contact details, charter summary, rental discount options and additional fees',
+            caption: 'Booking detail — price and discount',
+            glow: 'wideRight',
+          },
+        ]}
+      />
+    </section>
+
+    <!-- 07 — Records -->
+    <section class="section">
+      <div class="lead-head">
+        <SectionHead label="Boats & customers" title="One record for every boat and every customer." align="center" />
+        <p class="lead-head__text">
+          Each boat keeps its properties, gallery and listings; each customer keeps their spend, notes and booking
+          history.
+        </p>
+      </div>
+      <div class="pair">
+        <ScreenTile
+          image={boatDetail}
+          alt="Boat detail page with description, properties, gallery and listings"
+          caption="Fleet — boat detail"
+          glow="squareDiagonal"
+          accent="violet"
+          format="square"
+        />
+        <ScreenTile
+          image={customerDetail}
+          alt="Customer profile with total spend, bookings, rating and upcoming bookings"
+          caption="Sales — customer profile"
+          glow="squareDiagonalMirror"
+          accent="violet"
+          format="square"
+        />
+      </div>
+    </section>
+
+    <!-- 08 — Mobile -->
+    <section class="section">
+      <div class="split">
+        <SectionHead label="Responsive" title="The same system on a phone." />
+        <p class="split__text">
+          The mobile version keeps the key screens at hand away from the desk — the fleet, a customer’s balance and
+          the day’s numbers.
+        </p>
+      </div>
+      <ScreenTile
+        image={mobile}
+        alt="Three phone screens: boats overview, a customer with balance and spend, and the performance dashboard"
+        caption="Mobile — boats, customer, dashboard"
+        format="board"
+      />
+    </section>
+
+    <!-- 09 — Brand & design system -->
+    <section class="section">
+      <div class="split">
+        <SectionHead label="Brand & design system" title="A new identity on a reworked Material UI." />
+        <p class="split__text">
+          The redesign came with a new brand — mark, wordmark and palette. The component library is Google’s Material UI,
+          reworked for Propeller on Hanken Grotesk: stat cards, buttons, chips, form fields and data tables.
+        </p>
+      </div>
+      <ScreenTile image={brand} alt="Propeller brand sheet: palette, logo mark and wordmark" caption="Brand" format="board" />
+    </section>
+
+    <!-- 10 — Outcome -->
+    <section class="section section--text">
+      <SectionHead label="Outcome" title="One system for the whole rental business — still live." />
+      <ol class="outcomes">
+        {
+          outcomes.map((row, i) => (
+            <li class="outcome">
+              <span class="outcome__num">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="outcome__title">{row.title}</h3>
+              <p class="outcome__text">{row.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+  </main>
+
+  <CaseFooter next={{ title: 'Yachtswaps', href: '/work/yachtswaps' }} />
+  <ActionDock />
+</Base>
