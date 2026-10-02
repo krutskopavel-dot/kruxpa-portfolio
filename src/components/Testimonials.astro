@@ -1,0 +1,254 @@
+---
+// Recommendations received on LinkedIn, copied by hand (there is no public API for them).
+// `lead` is the line set large; `body` follows in regular text. Initials stand in for photos.
+import { site } from '../site';
+
+const testimonials = [
+  {
+    lead: 'Pavel is one of the most talented UX/UI designers I’ve had the pleasure of working with in the past decade of my nearly 20-year career in Product Management.',
+    body: [
+      'We worked closely for over a year on several projects, including the Art-chain ecosystem — a massive project that involved creating over 100 components and more than 300 screens across three applications, including a complex art management system and a marketplace. Pavel not only delivers stylish and modern UIs but also does a fantastic job improving usability by thoroughly reviewing existing interfaces, wireframes, and product specs.',
+      'I absolutely love working with Pavel for his reliability, creativity, and impeccable sense of style. I’m really looking forward to working with him again in the future.',
+    ],
+    name: 'Pavel Djuric',
+    role: 'Product Advisory · Blockchain',
+    relation: 'Client · Aug 2024',
+  },
+  {
+    lead: 'Pavel is a skilled and responsible professional with whom collaboration is smooth and effective.',
+    body: [
+      'He communicates openly, listens carefully, and is always supportive when needed. His thoughtful approach and reliability make him a valuable colleague on any project.',
+    ],
+    name: 'Stanislav Horváth',
+    role: 'Full-Stack Engineer · AI-first development',
+    relation: 'Same team · Jan 2026',
+  },
+  // DRAFT written for Roman to approve or edit — not his words yet. Don't publish until he confirms.
+  {
+    lead: 'Pavel designed the website and the brand for ROVER on Boards, and every decision he made has a clear reason behind it.',
+    body: [
+      'The quality is consistently high, from the identity down to the smallest details of the site. Pavel is always ready to help, explains his thinking openly and delivers on time — working with him was easy from start to finish.',
+    ],
+    name: 'Roman Kopyrkin',
+    role: 'ROVER on Boards · Snowboard apparel',
+    relation: 'Client · Website & branding',
+    draft: true,
+  },
+];
+
+// Drafts stay out of the page until the author approves the text (then remove `draft`).
+const published = testimonials.filter((t) => !('draft' in t && t.draft));
+
+const initials = (name: string) =>
+  name
+    .split(' ')
+    .map((part) => part[0])
+    .join('');
+
+const recommendationsUrl = `${site.links.linkedin}details/recommendations/`;
+---
+
+<section class="kind" aria-labelledby="kind-title">
+  <div class="kind__head">
+    <h2 class="eyebrow" id="kind-title">Kind words</h2>
+    <p class="kind__statement">What people I’ve worked with say.</p>
+  </div>
+
+  <div class="kind__grid" style={`--count: ${published.length}`}>
+    {
+      published.map((t) => (
+        <figure class="quote">
+          <blockquote class="quote__text">
+            <p class="quote__lead">{t.lead}</p>
+            {t.body.map((paragraph) => (
+              <p class="quote__body">{paragraph}</p>
+            ))}
+          </blockquote>
+          <figcaption class="quote__author">
+            <span class="quote__avatar" aria-hidden="true">
+              {initials(t.name)}
+            </span>
+            <span class="quote__who">
+              <span class="quote__name">{t.name}</span>
+              <span class="quote__role">{t.role}</span>
+              <span class="eyebrow quote__relation">{t.relation}</span>
+            </span>
+          </figcaption>
+        </figure>
+      ))
+    }
+  </div>
+
+  <a class="kind__source" href={recommendationsUrl} target="_blank" rel="noopener noreferrer">
+    All recommendations on LinkedIn ↗
+  </a>
+</section>
+
+<style>
+  .kind {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 48px;
+    padding: var(--section-gap) var(--page-inset) 0;
+  }
+
+  .kind__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding-inline: var(--content-inset);
+    text-align: center;
+  }
+  .kind__statement {
+    font-weight: 500;
+    font-size: clamp(24px, 2.223vw, 32px);
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+  }
+
+  /* All cards in one row (one column per review); each is as tall as its text */
+  .kind__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--count, 3), minmax(0, 1fr));
+    align-items: start;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .quote {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 40px;
+    margin: 0;
+    padding: 40px;
+    border-radius: 48px;
+    background: var(--color-surface);
+  }
+  /* Figma "48, corner smoothing 100%": a squircle whose curve runs ~2× the radius along each
+     edge. Browsers without corner-shape keep the plain 48px radius. */
+  @supports (corner-shape: squircle) {
+    .quote {
+      border-radius: 96px;
+      corner-shape: squircle;
+    }
+  }
+
+  .quote__text {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0;
+  }
+  .quote__lead {
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 32px;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
+    text-wrap: pretty;
+  }
+  .quote__lead::before {
+    content: '“';
+  }
+  .quote__lead::after {
+    content: '”';
+  }
+  .quote__body {
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text-secondary);
+  }
+
+  .quote__author {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 1px solid var(--color-border);
+  }
+  .quote__avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--color-ink);
+    color: var(--color-ink-foreground);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .quote__who {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+  .quote__name {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-text);
+  }
+  .quote__role {
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--color-text-secondary);
+  }
+  .quote__relation {
+    margin-top: 8px;
+  }
+
+  .kind__source {
+    font-size: 14px;
+    line-height: 20px;
+    color: var(--color-text-secondary);
+    transition: color 150ms ease;
+  }
+  .kind__source:hover {
+    color: var(--color-text);
+  }
+
+  /* Narrow screens: a swipeable carousel that bleeds to the screen edges; the next card peeks in */
+  @media (max-width: 900px) {
+    .kind__grid {
+      display: flex;
+      align-items: flex-start; /* each card hugs its text instead of matching the longest */
+      width: auto;
+      align-self: stretch;
+      margin-inline: calc(-1 * var(--page-inset));
+      padding-inline: var(--page-inset);
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--page-inset);
+      scrollbar-width: none;
+    }
+    .kind__grid::-webkit-scrollbar {
+      display: none;
+    }
+    .quote {
+      flex: 0 0 min(86%, 420px);
+      scroll-snap-align: start;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .kind {
+      gap: 32px;
+    }
+    .quote {
+      padding: 32px 24px;
+      gap: 32px;
+    }
+    .quote__lead {
+      font-size: 20px;
+      line-height: 28px;
+    }
+  }
+</style>
