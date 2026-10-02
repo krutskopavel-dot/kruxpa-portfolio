@@ -15,7 +15,15 @@ const links = [
 <header class="header">
   <a class="brand" href="/" aria-label={`${site.name}, home`}>
     <span class="brand__mark">
-      <Image src={logoMark} alt="" widths={[114, 228]} sizes="57px" loading="eager" />
+      <!-- The sheet is drawn at 186% of the box (≈106px, 78px on phones): size the srcset for that -->
+      <Image
+        src={logoMark}
+        alt=""
+        widths={[106, 212, 318]}
+        sizes="(max-width: 720px) 79px, 107px"
+        quality={95}
+        loading="eager"
+      />
     </span>
     <span class="brand__text">
       <span class="eyebrow">{site.name}</span>
