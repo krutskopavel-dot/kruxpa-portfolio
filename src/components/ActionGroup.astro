@@ -164,21 +164,6 @@ const cases = [
     margin-top: 1.5px;
   }
 
-  /* Compact DISio button has a faint teal wash from the top (Figma 266:64165). */
-  .btn--disio::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background: linear-gradient(to top, #f5f5f5 78%, #cce7e5 100%);
-    opacity: 0;
-    transition: opacity var(--morph);
-  }
-  .actions--compact .btn--disio::before {
-    opacity: 1;
-  }
-
   /* Compact panel: the button's name in a small tooltip above it on hover / keyboard focus. */
   .actions--compact .btn::after {
     content: attr(data-tip);
