@@ -1,7 +1,6 @@
 ---
 // Recommendations received on LinkedIn, copied by hand (there is no public API for them).
 // `lead` is the line set large; `body` follows in regular text. Initials stand in for photos.
-import { site } from '../site';
 
 const testimonials = [
   {
@@ -43,8 +42,6 @@ const initials = (name: string) =>
     .split(' ')
     .map((part) => part[0])
     .join('');
-
-const recommendationsUrl = `${site.links.linkedin}details/recommendations/`;
 ---
 
 <section class="kind" aria-labelledby="kind-title">
@@ -77,10 +74,6 @@ const recommendationsUrl = `${site.links.linkedin}details/recommendations/`;
       ))
     }
   </div>
-
-  <a class="kind__source" href={recommendationsUrl} target="_blank" rel="noopener noreferrer">
-    All recommendations on LinkedIn ↗
-  </a>
 </section>
 
 <style>
@@ -201,16 +194,6 @@ const recommendationsUrl = `${site.links.linkedin}details/recommendations/`;
   }
   .quote__relation {
     margin-top: 8px;
-  }
-
-  .kind__source {
-    font-size: 14px;
-    line-height: 20px;
-    color: var(--color-text-secondary);
-    transition: color 150ms ease;
-  }
-  .kind__source:hover {
-    color: var(--color-text);
   }
 
   /* Narrow screens: a swipeable carousel that bleeds to the screen edges; the next card peeks in */
