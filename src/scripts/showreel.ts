@@ -169,7 +169,7 @@ export function initShowreel(reel: HTMLElement) {
     const s = 107 / 146;
     cards.forEach((card, i) => {
       const cardX = parseFloat(card.style.left);
-      const cardY = 320;
+      const cardY = 272;
       const tx = 80 + 140 - cardX - s * 72;
       const ty = rowTops[i] + 20 - cardY - s * 38;
       anim(
