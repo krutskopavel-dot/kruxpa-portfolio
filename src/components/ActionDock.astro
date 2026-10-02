@@ -5,13 +5,27 @@
 // group; the original keeps its place in the hero (hidden) so the layout never jumps.
 // While the closing CTA (with its own full buttons) is on screen, the panel steps aside.
 // On phones there is no flight: the panel is compact and docked from the start, on every page,
-// and it stays there by the CTA too (the CTA's own buttons are hidden on phones).
+// and it stays there by the CTA too (the CTA's own buttons are hidden on phones). There it also
+// carries the menu button (the menu itself is rendered by the Header).
 import ActionGroup from './ActionGroup.astro';
 ---
 
 <div class="dock" data-dock>
   <div class="dock__panel" inert>
-    <ActionGroup />
+    <ActionGroup>
+      <button
+        class="dock__menu"
+        type="button"
+        aria-label="Open menu"
+        aria-controls="site-menu"
+        aria-expanded="false"
+        data-menu-open
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 9h14M5 15h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+      </button>
+    </ActionGroup>
   </div>
 </div>
 
@@ -166,9 +180,31 @@ import ActionGroup from './ActionGroup.astro';
     pointer-events: none;
   }
 
+  /* Menu button: phones only, styled like the dock's icon buttons */
+  .dock__menu {
+    display: none;
+    place-items: center;
+    flex: none;
+    width: 52px;
+    height: 52px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+  .dock__menu:active {
+    transform: scale(0.97);
+  }
+
   @media (max-width: 720px) {
     .dock {
       bottom: calc(16px + env(safe-area-inset-bottom));
+    }
+    .dock__menu {
+      display: grid;
     }
     /* Room below the footer so the docked panel never covers its last line */
     :global(body) {
