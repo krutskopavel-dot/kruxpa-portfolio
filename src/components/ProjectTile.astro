@@ -1,7 +1,7 @@
 ---
 // Homepage case tile. On hover a frosted-glass card (after oem.care) floats in over the screenshot:
 // logo, mono kicker, title, one-line summary and a "Read case +" pill.
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
 interface Props {
@@ -15,9 +15,13 @@ interface Props {
 }
 
 const { href, image, alt, logo, kicker, title, summary } = Astro.props;
+// It gets blurred anyway, so a tiny copy is enough.
+const backdrop = await getImage({ src: image, width: 160, format: 'webp' });
 ---
 
 <a class="tile" href={href}>
+  <!-- Phones: blurred backdrop behind the card, which sits below the screenshot there -->
+  <img class="tile__backdrop" src={backdrop.src} alt="" aria-hidden="true" loading="lazy" decoding="async" />
   <Image src={image} alt={alt} widths={[700, 1400]} quality={92} sizes="(min-width: 1440px) 700px, (min-width: 900px) 50vw, 100vw" />
   <div class="glass">
     <div class="glass__top">
@@ -44,7 +48,10 @@ const { href, image, alt, logo, kicker, title, summary } = Astro.props;
     overflow: hidden;
     background: #141414;
   }
-  .tile > :global(img) {
+  .tile__backdrop {
+    display: none;
+  }
+  .tile > :global(img:not(.tile__backdrop)) {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -154,6 +161,50 @@ const { href, image, alt, logo, kicker, title, summary } = Astro.props;
     box-shadow:
       0 4px 10px rgba(0, 0, 0, 0.12),
       var(--shadow-sm);
+  }
+
+  /* Phones: a taller tile. The screenshot sits on top and its backdrop runs on below it
+     (the image's bottom strip stretched down, then blurred); the card, without the button,
+     sits on that extension. */
+  @media (max-width: 720px) {
+    .tile {
+      display: flex;
+      flex-direction: column;
+      aspect-ratio: auto;
+      padding-bottom: 8px;
+    }
+    /* The square image stretched 10× tall and pinned to the bottom: the extension shows only
+       its lowest rows, so the colours carry on from the screenshot's edge without a seam. */
+    .tile__backdrop {
+      display: block;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 10;
+      object-fit: fill;
+      filter: blur(16px);
+      transform: scaleX(1.1);
+    }
+    /* Fade the screenshot's lower edge into the backdrop so the tile reads as one surface */
+    .tile > :global(img:not(.tile__backdrop)) {
+      position: relative;
+      aspect-ratio: 1;
+      height: auto;
+      -webkit-mask-image: linear-gradient(to bottom, #000 85%, transparent);
+      mask-image: linear-gradient(to bottom, #000 85%, transparent);
+    }
+    /* Pulled up into the faded lower edge of the image, just below the screen */
+    .glass {
+      width: auto;
+      margin: -48px 8px 0;
+      opacity: 1;
+      transform: none;
+    }
+    .glass__cta {
+      display: none;
+    }
   }
 
   /* No hover on touch screens: keep the card visible. */

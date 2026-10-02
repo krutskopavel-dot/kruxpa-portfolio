@@ -155,7 +155,8 @@ const ticks = [
   .reel {
     position: relative;
     aspect-ratio: 1408 / 720;
-    border-radius: var(--r, 8px);
+    /* Same corners as the case tiles at every width; only the screen inside scales its radius */
+    border-radius: var(--radius-sm);
     overflow: hidden;
     background: #141414;
     isolation: isolate;

@@ -17,7 +17,7 @@ export function initShowreel(reel: HTMLElement) {
   // Fit the 1440×900 stage to the rendered screen width. `zoom` (not transform: scale) makes the
   // browser lay out and rasterise the layers at their final size, so the 2× images are downsampled
   // with proper filtering instead of being squashed as one GPU texture — much sharper on large screens.
-  // Corner radius is 8px at the full 1408px tile and scales down with it.
+  // The screen's corner radius is 8px at the full 1408px tile and scales down with it.
   const fit = () => {
     stage.style.zoom = String(screen.clientWidth / 1440);
     reel.style.setProperty('--r', `${Math.min(8, (8 * reel.clientWidth) / 1408)}px`);

@@ -63,5 +63,9 @@ import wordmark from '../assets/home/wordmark.png';
     .cta__body {
       gap: 24px;
     }
+    /* Phones: the docked panel already carries the same buttons */
+    .cta__body :global([data-actions='cta']) {
+      display: none;
+    }
   }
 </style>

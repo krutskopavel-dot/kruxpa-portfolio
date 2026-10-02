@@ -1,0 +1,280 @@
+---
+// Phone menu: a full-screen frosted-glass sheet in the style of the homepage case cards,
+// 8px in from every edge. Opened by the menu button in the header (phones only).
+// The header's live experience counter lives here on phones.
+import disioLogo from '../assets/icons/logo-disio.svg';
+import artchainLogo from '../assets/icons/logo-artchain.svg';
+import { site } from '../site';
+import { experience } from '../lib/experience';
+
+const pages = [
+  { label: 'Work', href: '/#work' },
+  { label: 'About', href: '/#about' },
+  { label: 'Contact', href: '/#contact' },
+];
+
+const cases = [
+  { title: 'DISio', kicker: 'Enterprise AI · NDA', href: '/work/disio', logo: disioLogo },
+  { title: 'Artchain', kicker: 'Blockchain · Multi-role', href: '/work/artchain', logo: artchainLogo },
+];
+
+const contacts = [
+  { label: 'Email', href: site.links.email },
+  { label: 'LinkedIn', href: site.links.linkedin, external: true },
+  { label: 'Telegram', href: site.links.telegram, external: true },
+  { label: 'CV', href: site.cvUrl, download: true },
+];
+---
+
+<div class="menu" id="site-menu" role="dialog" aria-modal="true" aria-label="Menu" hidden data-menu>
+  <div class="menu__sheet">
+    <div class="menu__top">
+      <p class="menu__experience">
+        <span class="menu__eyebrow">Experience in design</span>
+        <!-- Kept fresh by the Header script, which updates every [data-since] -->
+        <span class="menu__experience-value" data-since={site.experienceSince}>{experience(site.experienceSince)}</span>
+      </p>
+      <button class="menu__close" type="button" aria-label="Close menu" data-menu-close>
+        <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M4.5 4.5l11 11M15.5 4.5l-11 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+
+    <nav class="menu__pages" aria-label="Main">
+      {pages.map((p) => <a href={p.href}>{p.label}</a>)}
+    </nav>
+
+    <div class="menu__group">
+      <span class="menu__eyebrow">Case studies</span>
+      {
+        cases.map((c) => (
+          <a class="menu__case" href={c.href}>
+            <span class="menu__logo" aria-hidden="true">
+              <img src={c.logo.src} width={c.logo.width} height={c.logo.height} alt="" />
+            </span>
+            <span class="menu__case-text">
+              <span class="menu__case-title">{c.title}</span>
+              <span class="menu__eyebrow">{c.kicker}</span>
+            </span>
+          </a>
+        ))
+      }
+    </div>
+
+    <div class="menu__group menu__group--end">
+      <span class="menu__eyebrow">Contact</span>
+      <div class="menu__contacts">
+        {
+          contacts.map((c) => (
+            <a
+              class="menu__pill"
+              href={c.href}
+              target={c.external ? '_blank' : undefined}
+              rel={c.external ? 'noopener noreferrer' : undefined}
+              download={c.download || undefined}
+            >
+              {c.label}
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+  const toggles = document.querySelectorAll<HTMLElement>('[data-menu-open]');
+
+  if (menu) {
+    let lastFocus: HTMLElement | null = null;
+
+    const open = () => {
+      lastFocus = document.activeElement as HTMLElement | null;
+      menu.hidden = false;
+      document.documentElement.classList.add('menu-open');
+      toggles.forEach((t) => t.setAttribute('aria-expanded', 'true'));
+      requestAnimationFrame(() => menu.classList.add('is-open'));
+      menu.querySelector<HTMLElement>('[data-menu-close]')?.focus({ preventScroll: true });
+    };
+
+    const close = () => {
+      if (menu.hidden) return;
+      menu.classList.remove('is-open');
+      document.documentElement.classList.remove('menu-open');
+      toggles.forEach((t) => t.setAttribute('aria-expanded', 'false'));
+      const done = () => (menu.hidden = true);
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) done();
+      else menu.addEventListener('transitionend', done, { once: true });
+      lastFocus?.focus({ preventScroll: true });
+    };
+
+    toggles.forEach((t) => t.addEventListener('click', open));
+    menu.querySelector('[data-menu-close]')?.addEventListener('click', close);
+    // Any link closes the sheet (anchors on the same page would otherwise scroll behind it).
+    menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') close();
+    });
+    // Rotating to a wide screen: the menu has no desktop counterpart.
+    window.matchMedia('(min-width: 721px)').addEventListener('change', (e) => e.matches && close());
+  }
+</script>
+
+<style>
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    padding: 8px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  .menu[hidden] {
+    display: none;
+  }
+
+  /* Same glass as the case cards on the homepage */
+  .menu__sheet {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    height: 100%;
+    padding: 24px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 32px;
+    background: rgba(40, 37, 34, 0.72);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    backdrop-filter: blur(24px) saturate(1.4);
+    color: #fff;
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+    transition:
+      opacity 250ms ease,
+      transform 400ms var(--ease-out);
+  }
+  .menu.is-open .menu__sheet {
+    opacity: 1;
+    transform: none;
+  }
+
+  .menu__eyebrow {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .menu__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .menu__experience {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .menu__experience-value {
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 24px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Just the cross; the hit area stays 44px, nudged so the icon lines up with the content edge */
+  .menu__close {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .menu__pages {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .menu__pages a {
+    font-weight: 500;
+    font-size: 40px;
+    line-height: 48px;
+    letter-spacing: -0.02em;
+  }
+
+  .menu__group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .menu__group--end {
+    margin-top: auto;
+  }
+
+  .menu__case {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  /* Same as the DISio / Artchain logo buttons on the homepage */
+  .menu__logo {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+  }
+  .menu__logo img {
+    width: 24px;
+    height: auto;
+  }
+  .menu__case-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .menu__case-title {
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: -0.01em;
+  }
+
+  .menu__contacts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(64px, 1fr));
+    gap: 8px;
+  }
+  /* Contact buttons: a lighter glass inside the sheet, with the 8px corners of the dock buttons */
+  .menu__pill {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 44px;
+    padding: 0 8px;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    color: #fff;
+  }
+
+  :global(html.menu-open) {
+    overflow: hidden;
+  }
+</style>

@@ -110,13 +110,29 @@ const facts = [
       padding-top: 64px;
       gap: 40px;
     }
+    /* Phones: the buttons are docked at the bottom from the start (ActionDock) */
+    .hero__intro :global([data-actions='hero']) {
+      display: none;
+    }
+    /* Phones: a left-aligned two-column list (Figma "Home v3 mobile"); labels keep the mono style */
     .facts {
-      flex-direction: column;
-      align-items: center;
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 12px 24px;
+      align-self: stretch;
+      text-align: left;
+      font-size: 14px;
+      line-height: 20px;
     }
     .fact {
-      flex-wrap: wrap;
-      justify-content: center;
+      display: contents;
+    }
+    .fact__label {
+      line-height: 20px;
+    }
+    .fact__label::before {
+      width: auto;
+      margin-right: 4px;
     }
     .hero__reel {
       margin-top: 48px;

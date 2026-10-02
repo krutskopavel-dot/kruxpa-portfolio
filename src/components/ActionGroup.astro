@@ -206,6 +206,13 @@ const cases = [
     transition-delay: 80ms;
   }
 
+  /* Touch: a tap would leave the tooltip stuck on screen */
+  @media (hover: none) {
+    .actions--compact .btn::after {
+      display: none;
+    }
+  }
+
   @media (max-width: 480px) {
     .actions:not(.actions--compact) {
       gap: 4px;

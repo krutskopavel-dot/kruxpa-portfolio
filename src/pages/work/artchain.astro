@@ -6,6 +6,7 @@ import SectionHead from '../../components/case/SectionHead.astro';
 import ScreenTile from '../../components/case/ScreenTile.astro';
 import Feature from '../../components/case/Feature.astro';
 import CaseFooter from '../../components/case/CaseFooter.astro';
+import ActionDock from '../../components/ActionDock.astro';
 import timelineDot from '../../assets/cases/timeline-dot.svg';
 import '../../styles/case.css';
 
@@ -234,9 +235,9 @@ const outcomes = [
             {
               tensions.map(([says, need, design]) => (
                 <tr>
-                  <td>{says}</td>
-                  <td>{need}</td>
-                  <td>{design}</td>
+                  <td data-label="The blockchain says">{says}</td>
+                  <td data-label="People need">{need}</td>
+                  <td data-label="So the design…">{design}</td>
                 </tr>
               ))
             }
@@ -399,4 +400,5 @@ const outcomes = [
   </main>
 
   <CaseFooter next={{ title: 'DISio', href: '/work/disio' }} />
+  <ActionDock />
 </Base>

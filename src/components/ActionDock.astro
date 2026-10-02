@@ -4,6 +4,8 @@
 // flies it home and expands it again. Technically the travelling panel is a fixed copy of the
 // group; the original keeps its place in the hero (hidden) so the layout never jumps.
 // While the closing CTA (with its own full buttons) is on screen, the panel steps aside.
+// On phones there is no flight: the panel is compact and docked from the start, on every page,
+// and it stays there by the CTA too (the CTA's own buttons are hidden on phones).
 import ActionGroup from './ActionGroup.astro';
 ---
 
@@ -20,7 +22,8 @@ import ActionGroup from './ActionGroup.astro';
   const hero = document.querySelector<HTMLElement>('[data-actions="hero"]');
   const cta = document.querySelector('[data-actions="cta"]');
 
-  if (dock && panel && group && hero) {
+  if (dock && panel && group) {
+    const phone = window.matchMedia('(max-width: 720px)');
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const EASE = 'cubic-bezier(.65,0,.35,1)';
     const BOTTOM = 24; // panel's resting gap from the bottom edge (keep in sync with CSS)
@@ -30,7 +33,7 @@ import ActionGroup from './ActionGroup.astro';
 
     // Offset from the panel's resting place (bottom centre) to wherever the hero group is now.
     const offsetToHero = () => {
-      const h = hero.getBoundingClientRect();
+      const h = hero!.getBoundingClientRect();
       return {
         x: h.left + h.width / 2 - window.innerWidth / 2,
         y: h.top + h.height / 2 - (window.innerHeight - BOTTOM - panel.offsetHeight / 2),
@@ -46,18 +49,19 @@ import ActionGroup from './ActionGroup.astro';
     };
 
     const sync = () => {
-      const active = detached && !ctaVisible;
-      dock.classList.toggle('is-away', detached && ctaVisible);
+      const away = detached && ctaVisible && !phone.matches;
+      const active = detached && !away;
+      dock.classList.toggle('is-away', away);
       panel.toggleAttribute('inert', !active);
     };
 
     const detach = (animate: boolean) => {
       detached = true;
       flight?.cancel();
-      hero.style.visibility = 'hidden';
+      if (hero) hero.style.visibility = 'hidden';
       dock.classList.add('is-on');
       sync();
-      if (!animate || reduced) {
+      if (!animate || reduced || !hero) {
         setCompactInstantly(true);
         return;
       }
@@ -76,12 +80,12 @@ import ActionGroup from './ActionGroup.astro';
       flight?.cancel();
       sync();
       const land = () => {
-        hero.style.visibility = '';
+        if (hero) hero.style.visibility = '';
         dock.classList.remove('is-on');
         setCompactInstantly(false);
         flight?.cancel();
       };
-      if (reduced || ctaVisible) return land();
+      if (reduced || (ctaVisible && !phone.matches) || !hero) return land();
       // Fly back up into the hero slot, expanding on the way.
       const { x, y } = offsetToHero();
       group.classList.remove('actions--compact');
@@ -97,11 +101,15 @@ import ActionGroup from './ActionGroup.astro';
     // it sits instead of first riding the page up to the top edge. Back at the top, it returns.
     const THRESHOLD = 40;
     let ticking = false;
+    // Desktop pages without the hero group (case studies) keep the dock hidden.
+    const update = (animate: boolean) => {
+      const want = phone.matches || (!!hero && window.scrollY > THRESHOLD);
+      if (want && !detached) detach(animate && !phone.matches);
+      else if (!want && detached) attach();
+    };
     const onScroll = () => {
       ticking = false;
-      const scrolled = window.scrollY > THRESHOLD;
-      if (scrolled && !detached) detach(true);
-      else if (!scrolled && detached) attach();
+      update(true);
     };
     window.addEventListener(
       'scroll',
@@ -113,8 +121,12 @@ import ActionGroup from './ActionGroup.astro';
       },
       { passive: true },
     );
-    // Page opened (or restored) already scrolled down: start docked, no flight.
-    if (window.scrollY > THRESHOLD) detach(false);
+    // Page opened (or restored) already scrolled down, or on a phone: start docked, no flight.
+    update(false);
+    phone.addEventListener('change', () => {
+      update(false);
+      sync();
+    });
 
     if (cta) {
       new IntersectionObserver(([entry]) => {
@@ -152,6 +164,16 @@ import ActionGroup from './ActionGroup.astro';
     opacity: 0;
     translate: 0 32px;
     pointer-events: none;
+  }
+
+  @media (max-width: 720px) {
+    .dock {
+      bottom: calc(16px + env(safe-area-inset-bottom));
+    }
+    /* Room below the footer so the docked panel never covers its last line */
+    :global(body) {
+      padding-bottom: 48px;
+    }
   }
 
   .dock :global(.actions.is-instant .btn),

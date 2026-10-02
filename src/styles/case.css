@@ -393,15 +393,41 @@
   .case .tensions thead {
     display: none;
   }
+  /* Each row becomes a stack of three labelled cells (the table head is hidden) */
   .case .tensions tr {
-    display: block;
-    padding: 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 32px 0;
     border-top: 1px solid #333;
+  }
+  .case .tensions tr:last-child {
+    padding-bottom: 0;
   }
   .case .tensions td {
     display: block;
-    padding: 0 0 8px;
+    padding: 0;
     border: 0;
+    font-size: 16px;
+    line-height: 24px;
+  }
+  .case .tensions td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 6px;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 11px;
+    line-height: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #7d868e;
+  }
+  /* The answer: lifted onto its own panel so it reads as the conclusion of the row */
+  .case .tensions td:last-child {
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.06);
   }
   .case .outcome {
     grid-template-columns: 1fr;
