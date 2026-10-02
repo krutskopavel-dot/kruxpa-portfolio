@@ -90,17 +90,18 @@ const page = (wrong: boolean) => `<!doctype html>
   .eyebrow { font: 500 12px/16px 'ABC Areal Mono', ui-monospace, monospace; letter-spacing: .06em; text-transform: uppercase; color: #5f6b76; }
   h1 { margin: 0; font-weight: 500; font-size: 32px; line-height: 38px; letter-spacing: -.02em; }
   p { margin: 0; color: #58646f; }
-  form { display: flex; gap: 8px; }
+  /* Same ghost tray as the button groups on the site */
+  form { display: flex; gap: 8px; padding: 8px; border-radius: 12px; background: rgba(0,0,0,.05); }
   /* A plain text field: outline only (a filled background reads as a button), eye toggle inside */
   .field { position: relative; flex: 1; min-width: 0; }
   input {
     width: 100%; height: 52px; padding: 0 52px 0 16px;
-    border: 1px solid #cdd2d6; border-radius: 8px; background: transparent;
+    border: 1px solid rgba(0,0,0,.16); border-radius: 8px; background: transparent;
     font: inherit; font-size: 16px; color: #171717; text-align: left;
     transition: border-color 150ms ease, box-shadow 150ms ease;
   }
   input::placeholder { color: #8a949d; }
-  input:hover { border-color: #9aa3ab; }
+  input:hover { border-color: rgba(0,0,0,.32); }
   input:focus { outline: none; border-color: #171717; box-shadow: 0 0 0 3px rgba(23,23,23,.08); }
   .error-state input { border-color: #c0392b; }
   .reveal {
