@@ -4,6 +4,7 @@
 // flies it home and expands it again. Technically the travelling panel is a fixed copy of the
 // group; the original keeps its place in the hero (hidden) so the layout never jumps.
 // While the closing CTA (with its own full buttons) is on screen, the panel steps aside.
+// Case study pages have no hero group: there the panel is docked from the start.
 // On phones there is no flight: the panel is compact and docked from the start, on every page,
 // and it stays there by the CTA too (the CTA's own buttons are hidden on phones). There it also
 // carries the menu button (the menu itself is rendered by the Header).
@@ -115,9 +116,9 @@ import ActionGroup from './ActionGroup.astro';
     // it sits instead of first riding the page up to the top edge. Back at the top, it returns.
     const THRESHOLD = 40;
     let ticking = false;
-    // Desktop pages without the hero group (case studies) keep the dock hidden.
+    // Pages without the hero group (case studies) have the panel docked from the start.
     const update = (animate: boolean) => {
-      const want = phone.matches || (!!hero && window.scrollY > THRESHOLD);
+      const want = phone.matches || !hero || window.scrollY > THRESHOLD;
       if (want && !detached) detach(animate && !phone.matches);
       else if (!want && detached) attach();
     };
@@ -197,6 +198,11 @@ import ActionGroup from './ActionGroup.astro';
   }
   .dock__menu:active {
     transform: scale(0.97);
+  }
+
+  /* Case pages: the panel is always down there, so leave room under the footer */
+  :global(body:has(main.case)) {
+    padding-bottom: 48px;
   }
 
   @media (max-width: 720px) {
