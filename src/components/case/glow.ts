@@ -10,6 +10,8 @@ const FADE = '23,23,23';
 const palettes = {
   teal: { light: '47,211,176', mid: '29,161,138', deep: '11,110,99', dark: '17,67,61' },
   orange: { light: '255,106,26', mid: '225,72,19', deep: '194,38,12', dark: '109,31,18' },
+  // Yachtswaps: mint into ocean blue
+  ocean: { light: '77,217,173', mid: '45,150,166', deep: '13,84,158', dark: '12,45,85' },
 } satisfies Record<string, Palette>;
 
 export type Accent = keyof typeof palettes;

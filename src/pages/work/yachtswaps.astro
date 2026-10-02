@@ -1,0 +1,352 @@
+---
+// Yachtswaps case study — Figma "Yachtswaps — Portfolio Case Study · v1 Page" (290:27122).
+// Screens are 2× exports of the source frames in section 240:32430; the landing is 1× (no source frame).
+import Base from '../../layouts/Base.astro';
+import Header from '../../components/Header.astro';
+import SectionHead from '../../components/case/SectionHead.astro';
+import ScreenTile from '../../components/case/ScreenTile.astro';
+import Feature from '../../components/case/Feature.astro';
+import CaseFooter from '../../components/case/CaseFooter.astro';
+import ActionDock from '../../components/ActionDock.astro';
+import '../../styles/case.css';
+
+import heroSearch from '../../assets/cases/yachtswaps/hero-search.png';
+import landing from '../../assets/cases/yachtswaps/landing.png';
+import officeMyBoats from '../../assets/cases/yachtswaps/office-my-boats.png';
+import stepConnectionRequest from '../../assets/cases/yachtswaps/step-connection-request.png';
+import stepTheirBoats from '../../assets/cases/yachtswaps/step-their-boats.png';
+import stepDatesApproval from '../../assets/cases/yachtswaps/step-dates-approval.png';
+import swapTrips from '../../assets/cases/yachtswaps/swap-trips.png';
+import checkIn from '../../assets/cases/yachtswaps/check-in.png';
+import boatDetail from '../../assets/cases/yachtswaps/boat-detail.png';
+import searchMobile from '../../assets/cases/yachtswaps/search-mobile.png';
+import designSystem from '../../assets/cases/yachtswaps/design-system.png';
+
+const meta = [
+  { label: 'Role', value: 'Product Designer' },
+  { label: 'Scope', value: 'Search, swap flow, office area, design system' },
+  { label: 'Platform', value: 'B2C responsive web app + landing page' },
+  { label: 'Timeline', value: 'First 6 months at Iguana' },
+];
+
+const tldr = [
+  {
+    label: '01 — Problem',
+    text: 'Yachts sit idle most of the year, and renting one abroad is expensive and complex. There was no safe way for owners to swap boats with each other.',
+  },
+  {
+    label: '02 — My part',
+    text: 'Designed the product end to end: landing, search and boat pages, the swap flow, check-in and check-out, the office area and the design system.',
+  },
+  {
+    label: '03 — Outcome',
+    text: 'A full product where every risky moment of a swap — first contact, dates, handover — has its own clear step and status.',
+  },
+];
+
+const pains = [
+  { title: 'Idle boats', text: 'A yacht costs money every month, but its owner uses it only a few weeks a year.' },
+  {
+    title: 'Expensive charters abroad',
+    text: 'Sailing somewhere new means renting a boat — costly and logistically complex.',
+  },
+  { title: 'No place to swap', text: 'Owners had no dedicated platform to find each other and agree on an exchange.' },
+];
+
+const roles = [
+  {
+    label: '01 — Lends a boat',
+    title: 'Host',
+    text: 'Lists a yacht, sets availability and accepts or declines swap requests.',
+  },
+  {
+    label: '02 — Borrows a boat',
+    title: 'Guest',
+    text: 'Finds a boat by destination, sends a swap request and plans the trip.',
+  },
+  {
+    label: '03 — In every swap',
+    title: 'Swap partners',
+    text: 'Each owner is both at once: my boat for yours, my dates for yours.',
+  },
+];
+
+const tensions = [
+  [
+    'Handing a multi-million boat to a stranger.',
+    'To know who they’re dealing with before sharing anything.',
+    'Starts with a connection request and a profile; contacts open only after it’s accepted.',
+  ],
+  [
+    'Two trips, two boats, two sets of dates.',
+    'To agree on dates without endless messaging.',
+    'Lets each side approve or edit the other’s trip dates in one stepper.',
+  ],
+  [
+    'The boat comes back after someone else used it.',
+    'Proof of its condition before and after.',
+    'Records the boat’s state at check-in and check-out, side by side.',
+  ],
+];
+
+const outcomes = [
+  {
+    title: 'End-to-end product',
+    text: 'Landing, search, boat pages, swap flow, office area and admin — designed and walked through with the developers.',
+  },
+  {
+    title: 'Trust built into the flow',
+    text: 'Every risky moment of a swap has its own step and status, so owners always know where they stand.',
+  },
+  {
+    title: 'One system, two screens',
+    text: 'Responsive patterns and shared components keep desktop and mobile consistent.',
+  },
+];
+---
+
+<Base
+  title="Yachtswaps — Designing trust between strangers swapping yachts · Pavel Krutsko"
+  description="A platform where yacht owners travel the world by swapping boats with each other — Airbnb-style trips for people who own very expensive things."
+>
+  <Header />
+  <main class="case">
+    <!-- 01 — Hero -->
+    <section class="hero">
+      <div class="hero__head">
+        <div class="hero__intro">
+          <p class="eyebrow">Case study 03 — Yachtswaps</p>
+          <h1>Designing trust between strangers swapping yachts</h1>
+          <p class="hero__lead">
+            A platform where yacht owners travel the world by swapping boats with each other — Airbnb-style trips for people
+            who own very expensive things.
+          </p>
+        </div>
+        <dl class="meta">
+          {
+            meta.map((row) => (
+              <div class="meta__row">
+                <dt class="eyebrow">{row.label}</dt>
+                <dd>{row.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+      <ScreenTile
+        image={heroSearch}
+        alt="Yachtswaps search: boats in Italy as cards next to a map with price pins"
+        glow="hero"
+        accent="ocean"
+        eager
+      />
+    </section>
+
+    <!-- 02 — TL;DR -->
+    <section class="tldr" aria-label="Summary">
+      {
+        tldr.map((cell) => (
+          <div class="tldr__cell">
+            <p class="eyebrow">{cell.label}</p>
+            <p class="tldr__text">{cell.text}</p>
+          </div>
+        ))
+      }
+    </section>
+
+    <!-- 03 — Context -->
+    <section class="section">
+      <div class="text-block">
+        <SectionHead label="Context" title="Owners have boats, not time — and no one to share them with." />
+        <ol class="columns">
+          {
+            pains.map((pain, i) => (
+              <li class="column column--ruled">
+                <span class="eyebrow">{String(i + 1).padStart(2, '0')}</span>
+                <h3 class="column__title">{pain.title}</h3>
+                <p class="column__text">{pain.text}</p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+      <ScreenTile
+        image={landing}
+        alt="Landing page: “Swap usage of your boat with other boat owners” with a destination search"
+        caption="Landing — swap usage of your boat"
+        glow="wideRight"
+        accent="ocean"
+      />
+    </section>
+
+    <!-- 04 — Users -->
+    <section class="section">
+      <div class="text-block">
+        <SectionHead label="Users" title="Every owner is a host and a guest." />
+        <div class="sheet">
+          <div class="sheet__row">
+            {
+              roles.map((cell) => (
+                <div class="sheet__cell">
+                  <p class="eyebrow">{cell.label}</p>
+                  <h3 class="sheet__title">{cell.title}</h3>
+                  <p class="column__text">{cell.text}</p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+      <ScreenTile
+        image={officeMyBoats}
+        alt="Office area: the owner’s boats with draft and listed statuses"
+        caption="Owner — office area, my boats"
+        glow="wideLeftInset"
+        accent="ocean"
+      />
+    </section>
+
+    <!-- 05 — Core challenge -->
+    <section class="section">
+      <div class="challenge">
+        <SectionHead label="The core challenge" title="Trust vs. friction." align="center" tone="dark" />
+        <table class="tensions">
+          <thead>
+            <tr>
+              <th scope="col">A swap means</th>
+              <th scope="col">Owners need</th>
+              <th scope="col">So the design…</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              tensions.map(([means, need, design]) => (
+                <tr>
+                  <td data-label="A swap means">{means}</td>
+                  <td data-label="Owners need">{need}</td>
+                  <td data-label="So the design…">{design}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 06 — Design decisions -->
+    <section class="section section--features">
+      <SectionHead label="Design decisions" title="Three decisions that made a swap feel safe." align="center" />
+      <Feature
+        label="Decision 01 / 03"
+        title="A swap is a step-by-step handshake"
+        text="A swap request moves through four steps — connection request, their trip, my trip, confirmed. Contacts unlock only after the owner accepts, and every step says what happens next."
+        accent="ocean"
+      >
+        <ScreenTile
+          format="phones"
+          screens={[
+            { image: stepConnectionRequest, alt: 'Swap request, step 1: a connection request from another owner' },
+            { image: stepTheirBoats, alt: 'Swap request, step 1: browsing the other owner’s boats' },
+            { image: stepDatesApproval, alt: 'Swap request, step 2: approving the dates of their trip' },
+          ]}
+          caption="Swap request — step 1 & step 2"
+          glow="wideRight"
+          accent="ocean"
+        />
+      </Feature>
+      <Feature
+        label="Decision 02 / 03"
+        title="Both trips in one place"
+        text="Each owner sees the other’s trip and their own side by side — boat, destination, dates — and approves or edits dates without leaving the flow."
+        accent="ocean"
+        screens={[
+          {
+            image: swapTrips,
+            alt: 'Swap request on desktop: the other owner’s trip with pick-up and return dates to approve',
+            caption: 'Swap request — David’s trip',
+            glow: 'wideLeft',
+          },
+        ]}
+      />
+      <Feature
+        label="Decision 03 / 03"
+        title="Before and after, on record"
+        text="Check-in and check-out capture the boat’s condition at handover and on return, so both owners share the same record if something goes wrong."
+        accent="ocean"
+        screens={[
+          {
+            image: checkIn,
+            alt: 'Check-in: fuel level, boat condition and photos recorded before the trip',
+            caption: 'Check-in — boat condition before the trip',
+            glow: 'wideLeft',
+          },
+        ]}
+      />
+    </section>
+
+    <!-- 07 — Discovery -->
+    <section class="section">
+      <div class="lead-head">
+        <SectionHead label="Discovery" title="Finding a boat feels like planning a trip." align="center" />
+        <p class="lead-head__text">
+          Search starts from a destination, with filters and a map; every boat page leads with photos, availability and
+          its owner.
+        </p>
+      </div>
+      <div class="pair">
+        <ScreenTile
+          image={boatDetail}
+          alt="Boat detail page with a photo gallery, specification and availability calendar"
+          caption="Guest — boat detail"
+          glow="squareDiagonal"
+          accent="ocean"
+          format="square"
+        />
+        <ScreenTile
+          image={searchMobile}
+          alt="Search results on a phone with filters and a map view toggle"
+          caption="Guest — search, mobile"
+          glow="squareDiagonalMirror"
+          accent="ocean"
+          format="phone"
+        />
+      </div>
+    </section>
+
+    <!-- 08 — Design system -->
+    <section class="section">
+      <div class="split">
+        <SectionHead label="Design system" title="One language for web and mobile." />
+        <p class="split__text">
+          A shared component set keeps search, the swap flow and the office area consistent — cards, forms,
+          statuses and an icon set drawn for boats.
+        </p>
+      </div>
+      <ScreenTile
+        image={designSystem}
+        alt="Component sheet with buttons, selects, inputs, notifications and icons"
+        caption="Components — cards, forms, statuses, icons"
+        format="board"
+      />
+    </section>
+
+    <!-- 09 — Outcome -->
+    <section class="section section--text">
+      <SectionHead label="Outcome" title="A complete product, designed in six months." />
+      <ol class="outcomes">
+        {
+          outcomes.map((row, i) => (
+            <li class="outcome">
+              <span class="outcome__num">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="outcome__title">{row.title}</h3>
+              <p class="outcome__text">{row.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+  </main>
+
+  <CaseFooter next={{ title: 'DISio', href: '/work/disio' }} />
+  <ActionDock />
+</Base>

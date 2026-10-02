@@ -30,7 +30,7 @@ const backdrop = await getImage({ src: image, width: 160, format: 'webp' });
         <span class="glass__kicker">{kicker}</span>
       </div>
       <span class="glass__logo" aria-hidden="true">
-        <img src={logo.src} width={logo.width} height={logo.height} alt="" />
+        <img class:list={{ wide: logo.width > logo.height * 1.5 }} src={logo.src} width={logo.width} height={logo.height} alt="" />
       </span>
     </div>
     <p class="glass__summary">{summary}</p>
@@ -119,6 +119,10 @@ const backdrop = await getImage({ src: image, width: 160, format: 'webp' });
   .glass__logo img {
     width: 26px;
     height: auto;
+  }
+  /* Wordmark-shaped marks (Yachtswaps) need more width to read at the same size */
+  .glass__logo img.wide {
+    width: 34px;
   }
 
   .glass__summary {

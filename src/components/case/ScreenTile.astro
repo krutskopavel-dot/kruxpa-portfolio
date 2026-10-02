@@ -4,28 +4,35 @@
 // square: 700×700 dark tile, screen 560×350
 // phone:  700×700 dark tile, phone screen 280 wide at top 80, running off the bottom edge
 // board:  1408×816 white tile filled edge to edge with the image (e.g. component sheets)
+// phones: 1408×816 dark tile, a row of phone screens 300×650, 40px apart (pass `screens`)
 // Screens keep their own aspect, top-aligned on white: taller shots crop at the bottom,
 // shorter ones leave white below — the same as the Figma frames.
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import { glow as glowFor, type Accent, type Glow } from './glow';
 
+type Screen = { image: ImageMetadata; alt: string };
+
 interface Props {
-  image: ImageMetadata;
-  alt: string;
+  image?: ImageMetadata;
+  alt?: string;
+  /** Several screens side by side; only for the phones format */
+  screens?: Screen[];
   caption?: string;
   glow?: Glow;
   accent?: Accent;
-  format?: 'wide' | 'square' | 'phone' | 'board';
+  format?: 'wide' | 'square' | 'phone' | 'phones' | 'board';
   eager?: boolean;
 }
 
-const { image, alt, caption, glow, accent = 'teal', format = 'wide', eager = false } = Astro.props;
+const { image, alt = '', caption, glow, accent = 'teal', format = 'wide', eager = false } = Astro.props;
+const screens: Screen[] = Astro.props.screens ?? (image ? [{ image, alt }] : []);
 
 const layout = {
   wide: { widths: [1040, 2080], sizes: '(min-width: 1440px) 1040px, 74vw' },
   square: { widths: [560, 1120], sizes: '(min-width: 1440px) 560px, (min-width: 900px) 40vw, 80vw' },
   phone: { widths: [280, 560], sizes: '(min-width: 1440px) 280px, (min-width: 900px) 20vw, 40vw' },
+  phones: { widths: [300, 600], sizes: '(min-width: 1440px) 300px, (min-width: 720px) 21vw, 30vw' },
   board: { widths: [1408, 2498], sizes: '(min-width: 1440px) 1408px, 100vw' },
 }[format];
 
@@ -34,16 +41,22 @@ const background = format === 'board' || !glow ? undefined : `background-image: 
 
 <figure class:list={['tile', `tile--${format}`]} style={background}>
   {caption && <figcaption class="eyebrow tile__caption">{caption}</figcaption>}
-  <div class="tile__screen">
-    <Image
-      src={image}
-      alt={alt}
-      widths={layout.widths}
-      quality={92}
-      sizes={layout.sizes}
-      loading={eager ? 'eager' : 'lazy'}
-      fetchpriority={eager ? 'high' : 'auto'}
-    />
+  <div class="tile__screens">
+    {
+      screens.map((screen) => (
+        <div class="tile__screen">
+          <Image
+            src={screen.image}
+            alt={screen.alt}
+            widths={layout.widths}
+            quality={92}
+            sizes={layout.sizes}
+            loading={eager ? 'eager' : 'lazy'}
+            fetchpriority={eager ? 'high' : 'auto'}
+          />
+        </div>
+      ))
+    }
   </div>
 </figure>
 
@@ -58,6 +71,7 @@ const background = format === 'board' || !glow ? undefined : `background-image: 
     overflow: hidden;
   }
   .tile--wide,
+  .tile--phones,
   .tile--board {
     aspect-ratio: 1408 / 816;
   }
@@ -73,6 +87,11 @@ const background = format === 'board' || !glow ? undefined : `background-image: 
     left: 40px;
     top: 26px;
     color: rgba(255, 255, 255, 0.6);
+  }
+
+  /* Single-screen formats: the wrapper is transparent to the grid, so the screen centres as before */
+  .tile__screens {
+    display: contents;
   }
 
   .tile__screen {
@@ -93,15 +112,34 @@ const background = format === 'board' || !glow ? undefined : `background-image: 
     height: auto;
   }
 
-  /* Phone: 280×788 at (210, 80) in the 700 tile, clipped by the tile's bottom edge */
+  /* Phone: 280 wide at (210, 80) in the 700 tile, running to the tile's bottom edge. The shot
+     fills it from the top, so a short 375×812 screen still reaches the edge (sides crop ~2%). */
   .tile--phone {
     place-items: start center;
   }
   .tile--phone .tile__screen {
     width: 40%;
-    aspect-ratio: 280 / 788;
+    aspect-ratio: 280 / 620;
     margin-top: calc(80 / 700 * 100%);
-    border-radius: 24px;
+    border-radius: 24px 24px 0 0;
+  }
+  .tile--phone .tile__screen :global(img) {
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  /* Phones: 300×650 screens 40px apart, centred in the 1408×816 tile (Figma 290:27276) */
+  .tile--phones .tile__screens {
+    display: flex;
+    justify-content: center;
+    gap: calc(40 / 1408 * 100%);
+    width: 100%;
+  }
+  .tile--phones .tile__screen {
+    width: calc(300 / 1408 * 100%);
+    aspect-ratio: 300 / 650;
+    border-radius: 20px;
   }
 
   /* Board: white tile, image covers it; caption sits on a white pill */
@@ -154,6 +192,13 @@ const background = format === 'board' || !glow ? undefined : `background-image: 
     }
     .tile--phone .tile__screen {
       width: 56%;
+    }
+    .tile--phones {
+      aspect-ratio: 1;
+    }
+    .tile--phones .tile__screen {
+      width: 29%;
+      border-radius: 12px;
     }
   }
 </style>

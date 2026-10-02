@@ -4,6 +4,7 @@
 // The header's live experience counter lives here on phones.
 import disioLogo from '../assets/icons/logo-disio.svg';
 import artchainLogo from '../assets/icons/logo-artchain.svg';
+import yachtswapsLogo from '../assets/icons/logo-yachtswaps.svg';
 import { site } from '../site';
 import { experience } from '../lib/experience';
 
@@ -17,6 +18,7 @@ const pages = [
 const cases = [
   { title: 'DISio', kicker: 'Enterprise AI · NDA', href: '/work/disio', logo: disioLogo },
   { title: 'Artchain', kicker: 'Blockchain · Multi-role', href: '/work/artchain', logo: artchainLogo },
+  { title: 'Yachtswaps', kicker: 'Yacht swapping · B2C', href: '/work/yachtswaps', logo: yachtswapsLogo },
 ];
 
 const contacts = [
@@ -52,7 +54,7 @@ const contacts = [
         cases.map((c) => (
           <a class="menu__case" href={c.href}>
             <span class="menu__logo" aria-hidden="true">
-              <img src={c.logo.src} width={c.logo.width} height={c.logo.height} alt="" />
+              <img class:list={{ wide: c.logo.width > c.logo.height * 1.5 }} src={c.logo.src} width={c.logo.width} height={c.logo.height} alt="" />
             </span>
             <span class="menu__case-text">
               <span class="menu__case-title">{c.title}</span>
@@ -241,6 +243,10 @@ const contacts = [
   .menu__logo img {
     width: 24px;
     height: auto;
+  }
+  /* Wordmark-shaped marks (Yachtswaps) need more width to read at the same size */
+  .menu__logo img.wide {
+    width: 32px;
   }
   .menu__case-text {
     display: flex;

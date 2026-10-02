@@ -1,6 +1,6 @@
 ---
 // One decision / shipped feature: split head (label + H3 left, explanation right) and its
-// screens below — one wide tile, or a pair of squares.
+// screens below — one wide tile, or a pair of squares. Any other tile goes in the default slot.
 import type { ImageMetadata } from 'astro';
 import ScreenTile from './ScreenTile.astro';
 import type { Accent, Glow } from './glow';
@@ -11,14 +11,14 @@ interface Props {
   label: string;
   title: string;
   text: string;
-  screens: [Screen] | [Screen, Screen];
+  screens?: [Screen] | [Screen, Screen];
   accent?: Accent;
   /** 'top' when the explanation runs longer than the title block */
   align?: 'bottom' | 'top';
 }
 
-const { label, title, text, screens, accent = 'teal', align = 'bottom' } = Astro.props;
-const format = screens.length === 1 ? 'wide' : 'square';
+const { label, title, text, screens = [], accent = 'teal', align = 'bottom' } = Astro.props;
+const format = screens.length === 2 ? 'square' : 'wide';
 ---
 
 <article class="feature">
@@ -31,6 +31,7 @@ const format = screens.length === 1 ? 'wide' : 'square';
   </div>
   <div class:list={['feature__screens', `feature__screens--${format}`]}>
     {screens.map((screen) => <ScreenTile {...screen} accent={accent} format={format} />)}
+    <slot />
   </div>
 </article>
 
