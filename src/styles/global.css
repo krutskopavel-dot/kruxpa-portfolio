@@ -38,38 +38,75 @@
 }
 
 :root {
-  /* Colour */
+  /* Colour — one black, one grey per background, one line colour per background.
+     Contrast is WCAG 2.1 AA (EN 301 549 / European Accessibility Act); ratios are noted. */
   --color-bg: #f5f5f5;
   --color-surface: #ffffff;
-  --color-ink: #171717;
-  --color-ink-foreground: #fafafa;
-  --color-text: #1d252c;
-  --color-text-secondary: #58646f;
-  --color-text-muted: #5f6b76;
-  --color-accent: #0c3fee;
-  --color-border: #e6e6e3;
-  --color-border-control: #e4e6e8;
+  --color-ink: #171717;                 /* the black: text, dark buttons, dark panels, media tiles */
+  --color-ink-hover: #2a2a2a;
+  --color-text: var(--color-ink);       /* 16.5:1 on bg, 17.9:1 on surface */
+  --color-text-secondary: #58646f;      /* the grey: 5.6:1 on bg, 6.1:1 on surface */
+  --color-accent: #0c3fee;              /* 6.5:1 on bg */
+  --color-border: #e6e6e3;              /* decorative lines on light */
   --color-ghost: rgba(0, 0, 0, 0.05);
+
+  /* On dark (ink) surfaces */
+  --color-on-dark: #ffffff;             /* 17.9:1 on ink */
+  --color-on-dark-secondary: #9aa3ab;   /* 7.0:1 on ink */
+  --color-border-dark: #333333;
+
+  /* Frosted glass over images: dark enough that white text passes AA even over pure white */
+  --color-glass: rgba(23, 23, 23, 0.68);
+  --color-glass-border: rgba(255, 255, 255, 0.14);
+  --color-on-glass-secondary: rgba(255, 255, 255, 0.85); /* ≥4.9:1 on glass */
 
   /* Type */
   --font-sans: 'ABC Areal', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-mono: 'ABC Areal Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   --font-serif: 'Young Serif', Georgia, serif;
 
+  /* Type scale — ~1.2 steps; every text style on the site uses one of these.
+     Headings scale with the viewport and reach their size at 1440. */
+  --text-display: clamp(44px, 4.445vw, 64px);  --leading-display: 1.0625;
+  --text-h1: clamp(34px, 3.334vw, 48px);       --leading-h1: calc(56 / 48);
+  --text-h2: clamp(32px, 2.778vw, 40px);       --leading-h2: 1.2;
+  --text-h3: clamp(24px, 2.223vw, 32px);       --leading-h3: 1.25;
+  --text-h4: 24px;                             --leading-h4: calc(32 / 24);
+  --text-lead: 20px;                           --leading-lead: 1.5;
+  --text-body-lg: 18px;                        --leading-body-lg: calc(28 / 18);
+  --text-body: 16px;                           --leading-body: 1.5;
+  --text-small: 14px;                          --leading-small: calc(20 / 14);
+  --text-caption: 12px;                        --leading-caption: calc(16 / 12);
+  --tracking-display: -0.03em;
+  --tracking-tight: -0.02em;   /* headings */
+  --tracking-snug: -0.01em;    /* lead text, card titles at 20px */
+  --tracking-caps: 0.06em;     /* mono uppercase labels */
+
   /* Shape & depth */
   --radius-sm: 8px;
   --radius-md: 12px;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.1);
 
-  /* Layout — measured on the 1440px frame */
+  /* Layout — measured on the 1440px frame. Media always runs edge to edge; the header and the
+     footer keep their edge insets. Text and cards: fluid up to a 14" MacBook (1512px), then held in a 1512px frame (text
+     1400 wide) until the screen inside a wide case tile (1040/1408 of the tile) grows past
+     that width; from there the text edges follow that screen's edges.
+     --frame-gutter is the extra side space this adds on top of the usual insets. */
+  --frame-gutter: max(0px, min((100vw - 1512px) / 2, (100vw - (100vw - 32px) * 1040 / 1408) / 2 - 56px));
   --page-inset: 16px;          /* media tiles */
-  --content-inset: 56px;       /* text sections */
+  --edge-inset: 56px;          /* footer columns: always 56px from the screen edge */
+  --content-inset: calc(var(--edge-inset) + var(--frame-gutter)); /* text sections */
+
+  /* Line length caps (~65 characters) so copy stays readable however wide its column gets */
+  --measure: 34em;             /* 18–20px paragraphs */
+  --measure-card: 36em;        /* 16px card text */
   --section-gap: clamp(96px, 11.11vw, 160px);
   --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 @media (max-width: 720px) {
   :root {
+    --edge-inset: 16px;
     --content-inset: 16px;
   }
 }
@@ -90,8 +127,8 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
-  font-size: 16px;
-  line-height: 24px;
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -119,11 +156,11 @@ a {
 .eyebrow {
   font-family: var(--font-mono);
   font-weight: 500;
-  font-size: 12px;
-  line-height: 16px;
-  letter-spacing: 0.06em;
+  font-size: var(--text-caption);
+  line-height: var(--leading-caption);
+  letter-spacing: var(--tracking-caps);
   text-transform: uppercase;
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
 }
 
 .visually-hidden {

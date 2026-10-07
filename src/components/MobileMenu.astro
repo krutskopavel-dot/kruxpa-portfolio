@@ -147,12 +147,12 @@ const contacts = [
     height: 100%;
     padding: 24px;
     overflow-y: auto;
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    border: 1px solid var(--color-glass-border);
     border-radius: 32px;
-    background: rgba(40, 37, 34, 0.72);
+    background: var(--color-glass);
     -webkit-backdrop-filter: blur(24px) saturate(1.4);
     backdrop-filter: blur(24px) saturate(1.4);
-    color: #fff;
+    color: var(--color-on-dark);
     opacity: 0;
     transform: translateY(12px) scale(0.98);
     transition:
@@ -167,11 +167,11 @@ const contacts = [
   .menu__eyebrow {
     font-family: var(--font-mono);
     font-weight: 500;
-    font-size: 11px;
-    line-height: 14px;
-    letter-spacing: 0.06em;
+    font-size: var(--text-caption);
+    line-height: var(--leading-caption);
+    letter-spacing: var(--tracking-caps);
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.7);
+    color: var(--color-on-glass-secondary);
   }
 
   .menu__top {
@@ -186,8 +186,9 @@ const contacts = [
   }
   .menu__experience-value {
     font-weight: 500;
-    font-size: 20px;
-    line-height: 24px;
+    font-size: var(--text-lead);
+    line-height: 1.2;
+    letter-spacing: var(--tracking-snug);
     font-variant-numeric: tabular-nums;
   }
 
@@ -201,7 +202,7 @@ const contacts = [
     padding: 0;
     border: 0;
     background: none;
-    color: #fff;
+    color: var(--color-on-dark);
     cursor: pointer;
   }
 
@@ -212,9 +213,9 @@ const contacts = [
   }
   .menu__pages a {
     font-weight: 500;
-    font-size: 40px;
-    line-height: 48px;
-    letter-spacing: -0.02em;
+    font-size: 40px; /* menu links: fixed on phones, h2 size */
+    line-height: var(--leading-h2);
+    letter-spacing: var(--tracking-tight);
   }
 
   .menu__group {
@@ -257,9 +258,9 @@ const contacts = [
   }
   .menu__case-title {
     font-weight: 500;
-    font-size: 20px;
-    line-height: 24px;
-    letter-spacing: -0.01em;
+    font-size: var(--text-lead);
+    line-height: 1.2;
+    letter-spacing: var(--tracking-snug);
   }
 
   .menu__contacts {
@@ -269,7 +270,7 @@ const contacts = [
   }
   /* Contact buttons: a lighter glass inside the sheet, with the 8px corners of the dock buttons */
   .menu__pill {
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    border: 1px solid var(--color-glass-border);
     border-radius: var(--radius-sm);
     background: rgba(255, 255, 255, 0.1);
     display: inline-flex;
@@ -278,9 +279,9 @@ const contacts = [
     height: 44px;
     padding: 0 8px;
     font-weight: 500;
-    font-size: 14px;
-    line-height: 20px;
-    color: #fff;
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
+    color: var(--color-on-dark);
   }
 
   :global(html.menu-open) {

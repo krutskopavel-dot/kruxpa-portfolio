@@ -54,10 +54,13 @@ const skills = [
     max-width: 920px;
     text-align: center;
   }
+  /* Same section-statement style as About and Kind words */
   .skills__statement {
+    max-width: 26em;
     font-weight: 500;
-    font-size: clamp(28px, 2.778vw, 40px);
-    line-height: 1.2;
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+    letter-spacing: var(--tracking-tight);
     color: var(--color-text);
     text-wrap: balance;
   }
@@ -89,12 +92,13 @@ const skills = [
   }
   .cell__title {
     font-weight: 500;
-    font-size: 24px;
-    line-height: 32px;
-    letter-spacing: -0.02em;
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+    letter-spacing: var(--tracking-tight);
     color: var(--color-text);
   }
   .cell__text {
+    max-width: var(--measure-card);
     color: var(--color-text-secondary);
   }
 

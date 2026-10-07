@@ -25,11 +25,16 @@ const poster = await getImage({ src: portrait, format: 'webp', quality: 90 });
       I’m a Senior Product Designer based in Prague, focused on turning complex products into clear, intuitive
       experiences.
     </p>
-    <p class="about__body">
-      I work across UX, UI, product strategy, and design systems — often with enterprise tools, AI products, and
-      workflows where simplicity is hard to achieve. I like understanding how things actually work, questioning
-      unnecessary complexity, and designing solutions that make sense for both users and the business.
-    </p>
+    <div class="about__body">
+      <p>
+        I work across UX, UI, product strategy, and design systems — often with enterprise tools, AI products, and
+        workflows where simplicity is hard to achieve.
+      </p>
+      <p>
+        I like understanding how things actually work, questioning unnecessary complexity, and designing solutions
+        that make sense for both users and the business.
+      </p>
+    </div>
   </div>
 </section>
 
@@ -83,21 +88,30 @@ const poster = await getImage({ src: portrait, format: 'webp', quality: 90 });
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 24px;
-    max-width: 920px;
+    gap: 16px;
     text-align: center;
   }
+  /* Two lines at 32px */
   .about__lead {
+    max-width: 26em;
     font-weight: 500;
-    font-size: clamp(24px, 2.223vw, 32px);
-    line-height: 1.25;
-    letter-spacing: -0.02em;
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+    letter-spacing: var(--tracking-tight);
     color: var(--color-text);
     text-wrap: balance;
   }
+  /* Centred copy reads best in short, even lines: two paragraphs, balanced */
   .about__body {
-    font-size: 18px;
-    line-height: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 34em;
+    margin-top: 16px;
+    font-size: var(--text-lead);
+    line-height: var(--leading-lead);
+    letter-spacing: var(--tracking-snug);
     color: var(--color-text-secondary);
+    text-wrap: balance;
   }
 </style>

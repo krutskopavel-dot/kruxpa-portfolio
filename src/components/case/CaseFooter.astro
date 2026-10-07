@@ -22,7 +22,7 @@ const { next } = Astro.props;
 <Footer />
 
 <style>
-  /* Same 56px edges as the footer columns below */
+  /* Text frame: 56px edges up to 1512, then follows the case text */
   .next-case {
     padding: 72px var(--content-inset);
   }
@@ -37,10 +37,10 @@ const { next } = Astro.props;
     display: flex;
     align-items: center;
     gap: 20px;
-    font-weight: 700;
-    font-size: clamp(44px, 4.445vw, 64px);
-    line-height: 1.0625;
-    letter-spacing: -0.03em;
+    font-weight: 500;
+    font-size: var(--text-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
     color: var(--color-text);
   }
   .next__title img {

@@ -69,7 +69,7 @@ const background = format === 'board' || !glow ? undefined : `background-image: 
     place-items: center;
     margin: 0;
     border-radius: var(--radius-sm);
-    background-color: #141414;
+    background-color: var(--color-ink);
     overflow: hidden;
   }
   .tile--wide,
@@ -88,7 +88,7 @@ const background = format === 'board' || !glow ? undefined : `background-image: 
     z-index: 1;
     left: 40px;
     top: 26px;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--color-on-dark-secondary);
   }
 
   /* Single-screen formats: the wrapper is transparent to the grid, so the screen centres as before */
@@ -99,7 +99,7 @@ const background = format === 'board' || !glow ? undefined : `background-image: 
   .tile__screen {
     aspect-ratio: 16 / 10;
     border-radius: var(--radius-sm);
-    background: #fff;
+    background: var(--color-surface);
     box-shadow: 0 24px 56px rgba(0, 0, 0, 0.4);
     overflow: hidden;
   }
@@ -147,7 +147,7 @@ const background = format === 'board' || !glow ? undefined : `background-image: 
   /* Board: white tile, image covers it; caption sits on a white pill */
   .tile--board {
     border: 1px solid var(--color-border);
-    background: #fff;
+    background: var(--color-surface);
   }
   .tile--board .tile__screen {
     position: absolute;
@@ -168,8 +168,8 @@ const background = format === 'board' || !glow ? undefined : `background-image: 
     padding: 8px 12px;
     border: 1px solid var(--color-border);
     border-radius: 6px;
-    background: #fff;
-    color: var(--color-text-muted);
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
   }
 
   @media (max-width: 720px) {

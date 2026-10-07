@@ -82,7 +82,7 @@ const initials = (name: string) =>
     flex-direction: column;
     align-items: center;
     gap: 48px;
-    padding: var(--section-gap) var(--page-inset) 0;
+    padding: var(--section-gap) calc(var(--page-inset) + var(--frame-gutter)) 0;
   }
 
   .kind__head {
@@ -95,9 +95,9 @@ const initials = (name: string) =>
   }
   .kind__statement {
     font-weight: 500;
-    font-size: clamp(24px, 2.223vw, 32px);
-    line-height: 1.25;
-    letter-spacing: -0.02em;
+    font-size: var(--text-h3);
+    line-height: var(--leading-h3);
+    letter-spacing: var(--tracking-tight);
     color: var(--color-text);
   }
 
@@ -108,6 +108,7 @@ const initials = (name: string) =>
     align-items: start;
     gap: 8px;
     width: 100%;
+    padding-inline: 40px; /* same 56px edges as the What I do sheet */
   }
 
   .quote {
@@ -136,10 +137,11 @@ const initials = (name: string) =>
     margin: 0;
   }
   .quote__lead {
+    max-width: 26em;
     font-weight: 500;
-    font-size: 24px;
-    line-height: 32px;
-    letter-spacing: -0.02em;
+    font-size: var(--text-h4);
+    line-height: var(--leading-h4);
+    letter-spacing: var(--tracking-tight);
     color: var(--color-text);
     text-wrap: pretty;
   }
@@ -150,8 +152,9 @@ const initials = (name: string) =>
     content: '”';
   }
   .quote__body {
-    font-size: 16px;
-    line-height: 24px;
+    max-width: var(--measure-card);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
     color: var(--color-text-secondary);
   }
 
@@ -170,7 +173,7 @@ const initials = (name: string) =>
     height: 44px;
     border-radius: 50%;
     background: var(--color-ink);
-    color: var(--color-ink-foreground);
+    color: var(--color-on-dark);
     font-weight: 500;
     font-size: 14px;
     line-height: 1;
@@ -183,13 +186,13 @@ const initials = (name: string) =>
   }
   .quote__name {
     font-weight: 500;
-    font-size: 16px;
-    line-height: 24px;
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
     color: var(--color-text);
   }
   .quote__role {
-    font-size: 14px;
-    line-height: 20px;
+    font-size: var(--text-small);
+    line-height: var(--leading-small);
     color: var(--color-text-secondary);
   }
   .quote__relation {

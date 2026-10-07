@@ -96,9 +96,9 @@ const cases = [
     border-radius: var(--radius-sm);
     background: var(--color-surface);
     box-shadow: var(--shadow-sm);
-    font-size: 14px;
+    font-size: var(--text-small);
     font-weight: 500;
-    line-height: 20px;
+    line-height: var(--leading-small);
     color: var(--color-ink);
     white-space: nowrap;
     transition:
@@ -120,10 +120,10 @@ const cases = [
 
   .btn--primary {
     background: var(--color-ink);
-    color: var(--color-ink-foreground);
+    color: var(--color-on-dark);
   }
   .btn--primary:hover {
-    background: #2a2a2a;
+    background: var(--color-ink-hover);
   }
 
   /* Content layer clips the label while the button narrows (the button itself doesn't clip,
@@ -199,10 +199,10 @@ const cases = [
     padding: 6px 10px;
     border-radius: 6px;
     background: var(--color-ink);
-    color: var(--color-ink-foreground);
+    color: var(--color-on-dark);
     font-weight: 500;
-    font-size: 12px;
-    line-height: 16px;
+    font-size: var(--text-caption);
+    line-height: var(--leading-caption);
     white-space: nowrap;
     pointer-events: none;
     opacity: 0;

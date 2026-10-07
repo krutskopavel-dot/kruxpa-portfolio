@@ -31,17 +31,17 @@ const { label, title, align = 'left', tone = 'light' } = Astro.props;
 
   .head__title {
     font-weight: 500;
-    font-size: clamp(32px, 3.056vw, 44px);
-    line-height: 1.1818;
-    letter-spacing: -0.02em;
+    font-size: var(--text-h2);
+    line-height: var(--leading-h2);
+    letter-spacing: var(--tracking-tight);
     color: var(--color-text);
     text-wrap: balance;
   }
 
   .head--dark .head__label {
-    color: #9aa3ab;
+    color: var(--color-on-dark-secondary);
   }
   .head--dark .head__title {
-    color: #fff;
+    color: var(--color-on-dark);
   }
 </style>

@@ -55,9 +55,9 @@ const facts = [
   .hero__title {
     max-width: 656px;
     font-weight: 500;
-    font-size: clamp(34px, 3.334vw, 48px);
-    line-height: 1.1667;
-    letter-spacing: -0.02em;
+    font-size: var(--text-h1);
+    line-height: var(--leading-h1);
+    letter-spacing: var(--tracking-tight);
     color: var(--color-text);
     text-wrap: balance;
   }
@@ -85,11 +85,11 @@ const facts = [
   /* Mono label, same style as the header and section labels */
   .fact__label {
     font-family: var(--font-mono);
-    font-size: 12px;
-    line-height: 16px;
-    letter-spacing: 0.06em;
+    font-size: var(--text-caption);
+    line-height: var(--leading-caption);
+    letter-spacing: var(--tracking-caps);
     text-transform: uppercase;
-    color: #73808b;
+    color: var(--color-text-secondary);
   }
   .fact__label::before {
     content: '•';
