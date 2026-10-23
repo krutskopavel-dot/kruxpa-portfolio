@@ -1,14 +1,16 @@
 ---
 // Recommendations received on LinkedIn, copied by hand (there is no public API for them).
 // `lead` is the line set large; `body` follows in regular text. Initials stand in for photos.
+// A long recommendation is shortened to match the others; `url` links to the full text.
+import { site } from '../site';
 
 const testimonials = [
   {
     lead: 'Pavel is one of the most talented UX/UI designers I’ve had the pleasure of working with in the past decade of my nearly 20-year career in Product Management.',
     body: [
-      'We worked closely for over a year on several projects, including the Art-chain ecosystem — a massive project that involved creating over 100 components and more than 300 screens across three applications, including a complex art management system and a marketplace. Pavel not only delivers stylish and modern UIs but also does a fantastic job improving usability by thoroughly reviewing existing interfaces, wireframes, and product specs.',
-      'I absolutely love working with Pavel for his reliability, creativity, and impeccable sense of style. I’m really looking forward to working with him again in the future.',
+      'Pavel not only delivers stylish and modern UIs but also does a fantastic job improving usability by thoroughly reviewing existing interfaces, wireframes, and product specs.',
     ],
+    url: `${site.links.linkedin}details/recommendations/`,
     name: 'Pavel Djuric',
     role: 'Product Advisory · Blockchain',
     relation: 'Client · Aug 2024',
@@ -59,6 +61,11 @@ const initials = (name: string) =>
             {t.body.map((paragraph) => (
               <p class="quote__body">{paragraph}</p>
             ))}
+            {'url' in t && (
+              <a class="quote__more" href={t.url} target="_blank" rel="noopener">
+                Read the full recommendation on LinkedIn
+              </a>
+            )}
           </blockquote>
           <figcaption class="quote__author">
             <span class="quote__avatar" aria-hidden="true">
@@ -156,6 +163,17 @@ const initials = (name: string) =>
     font-size: var(--text-body);
     line-height: var(--leading-body);
     color: var(--color-text-secondary);
+  }
+
+  .quote__more {
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    color: var(--color-text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .quote__more:hover {
+    text-decoration-thickness: 2px;
   }
 
   .quote__author {
